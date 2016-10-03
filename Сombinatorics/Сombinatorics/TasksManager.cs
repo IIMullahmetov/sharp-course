@@ -47,7 +47,7 @@ namespace Сombinatorics
         {
             for (int h = 0; h < students; h++)
             {
-                if (h != i && element == array[h, j] && i != 0)
+                if (i != 0 && h != i && element == array[h, j])
                 {
                     return true;
                 }
@@ -59,7 +59,7 @@ namespace Сombinatorics
         {
             for (int u = 0; u < tasks; u++)
             {
-                if (u != j && element == array[i, u] && j != 0)
+                if (j != 0 && u != j && element == array[i, u])
                 {
                     return true;
                 }
