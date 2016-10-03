@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Test
+namespace Test.ViewModel
 {
-    class Main
+    class MainViewModel
     {
-        static void MainMethod(string[] args)
-        {
-               
-        }
     }
 }

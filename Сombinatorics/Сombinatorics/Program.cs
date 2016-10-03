@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Test
+namespace Сombinatorics
 {
-    class Main
+    class Program
     {
-        static void MainMethod(string[] args)
+        static void Main(string[] args)
         {
-               
+            new TasksManager();
+            Console.ReadLine();
         }
     }
 }
