@@ -1,6 +1,6 @@
 ﻿/* ГЛАВА 3 */
 
-/*
+
 /* 1 задание */
 select onum, snum, odate from Orders 
 
@@ -50,10 +50,10 @@ where cname between 'A' and 'G'
 select * from Salespeople
 where sname like '%s'
 
-*/
+
 /* ГЛАВА 6 */
 
-/*
+
 /* 1 задание */
 select sum(amt) as amt from Orders
 where odate = '2015-03-10'
@@ -83,9 +83,9 @@ select cnum, sum(amt) as amt from Orders
 group by cnum
 order by amt
 
-*/
+
 /* ГЛАВА 8 */
-/*
+
 
 /* 1 задание */
 select Orders.onum, Customers.cname from Orders, Customers
@@ -100,7 +100,7 @@ where Orders.cnum = Customers.cnum and Orders.snum = Salespeople.snum
 select onum, amt * (1 + Salespeople.comm) as total from Orders, Customers, Salespeople
 where Orders.cnum = Customers.cnum and Orders.snum = Salespeople.snum and Customers.city = 'London'
 
-*/
+
 /* ГЛАВА 9 */
 
 
@@ -116,15 +116,10 @@ where c1.cnum = o1.cnum and c2.cnum = o2.cnum and o1.odate = o2.odate and o1.onu
 select с2.cname, с2.city from Customers с1, Customers с2
 where с1.cname = 'Hoffman' and с1.rating = с2.rating and с2.cname<>'Hoffman'
 
- /*
-
- select * from Salespeople
- where 0 < (select count(*) from Orders
-				where Salespeople.snum = Orders.snum)
-*/
 
 
 /* ГЛАВА 10 */
+
 
 /* 1 задание */
 select * from Orders
@@ -132,17 +127,29 @@ where cnum = (select cnum from Customers
 				where cname = 'Cisneros')
 
 /* 3 задание */
-
-select c.cname, c.cnum, rating, o.amt from Customers c, Orders o
-where amt > (select avg(amt) from Orders)
-
+select distinct cname, rating from Customers, Orders
+where amt > (select avg(amt) from Orders) and Orders.cnum = Customers.cnum;
 
 /* 5 задание */
+select snum, sum(amt) as amt from Orders
+group by snum
+having sum(amt) > (select max(amt) from Orders);
 
 
 /* ГЛАВА 11-12 */
 
+
 /* 1 задание */
+select cnum, cname from Customers c1
+where rating = (select max(rating) from Customers c2
+where c1.city = c2.city);
 
+/* 4 задание */
+select * from Salespeople first
+where exists (select * from Customers second
+where first.snum = second.snum and rating = 300);
 
-
+/* 6 задание */
+select * from Customers c
+where exists (select * from Orders o
+where c.snum = o.snum and c.cnum <> o.cnum)
