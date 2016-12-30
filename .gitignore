@@ -243,3 +243,33 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/DiaryDB
+/GazizovMarat-kaban-319d03a796c8
+/LaboratoryEntity
+/SemestrovkaDB
+/WpfApplication4
+/WpfApplication3
+/Database/Database
+/MvvmLight1/MvvmLight1/Design
+/MvvmLight1/MvvmLight1/Model
+/MvvmLight1/MvvmLight1/Properties
+/MvvmLight1/MvvmLight1
+/MvvmLight1
+/amantix-mvvm_example-2ab4de7f8316/WPF_MVVM/Commands
+/amantix-mvvm_example-2ab4de7f8316/WPF_MVVM/Context
+/amantix-mvvm_example-2ab4de7f8316/WPF_MVVM/Migrations
+/amantix-mvvm_example-2ab4de7f8316/WPF_MVVM/ViewModels
+/amantix-mvvm_example-2ab4de7f8316/WPF_MVVM/Services
+/Test/Test/Program.cs
+/Test/Test/packages.config
+/Test/Test/Gruber.cs
+/Test/Test/EntityGruber.csproj
+/Test/Test
+/Сombinatorics/Сombinatorics
+/Сombinatorics/Сombinatorics
+/Сombinatorics/Сombinatorics/Program.cs
+/Gruber.cs
+*.cs
+/amantix-mvvm_example-2ab4de7f8316/WPF_MVVM/packages (1).config
+/amantix-mvvm_example-2ab4de7f8316/WPF_MVVM/packages (2).config
+/amantix-mvvm_example-2ab4de7f8316/WPF_MVVM/packages.config
