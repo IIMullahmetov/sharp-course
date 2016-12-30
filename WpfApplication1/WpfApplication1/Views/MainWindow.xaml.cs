@@ -27,36 +27,34 @@ namespace WpfApplication1
 
         private void TodoTasks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Binding binding = new Binding();
+            //Binding binding = new Binding();
 
-            binding.ElementName = "TodoTasks"; // элемент-источник
-            binding.Path = new PropertyPath("Text"); // свойство элемента-источника
-            TextName.SetBinding(TextBlock.TextProperty, binding); // установка привязки для элемента-приемника
+            //binding.ElementName = "TodoTasks"; // элемент-источник
+            //binding.Path = new PropertyPath("Text"); // свойство элемента-источника
+            //TextName.SetBinding(TextBlock.TextProperty, binding); // установка привязки для элемента-приемника
+            //RightContent.Content = TodoTasks;
+            //sp.DataContext = TodoTasks;
+            //TextName.Text = "Yee";
         }
 
         private void ActiveTasks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Binding binding = new Binding();
-
-            binding.ElementName = "doneName"; // элемент-источник
-            binding.Path = new PropertyPath("Text"); // свойство элемента-источника
-            TextName.SetBinding(TextBlock.TextProperty, binding); // установка привязки для элемента-приемника
+            //Binding binding = new Binding();
+            //RightContent.Content = ActiveTasks;
+            //binding.ElementName = "doneName"; // элемент-источник
+            //binding.Path = new PropertyPath("Text"); // свойство элемента-источника
+            //TextName.SetBinding(TextBlock.TextProperty, binding); // установка привязки для элемента-приемника
+            //TextName.Text = "Yee2";
         }
 
         private void DoneTasks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Binding binding = new Binding();
-
-            binding.ElementName = "doneName"; // элемент-источник
-            binding.Path = new PropertyPath("Text"); // свойство элемента-источника
-            TextName.SetBinding(TextBlock.TextProperty, binding); // установка привязки для элемента-приемника
-        }
-
-        private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            StackPanel sp = (sender as StackPanel);
-            string nr = (sp.Children[1] as TextBlock).Text;
-            Console.WriteLine(nr);
+            //Binding binding = new Binding();
+            //RightContent.Content = DoneTasks;
+            //binding.ElementName = "doneName"; // элемент-источник
+            //binding.Path = new PropertyPath("Text"); // свойство элемента-источника
+            //TextName.SetBinding(TextBlock.TextProperty, binding); // установка привязки для элемента-приемника
+            //TextName.Text = "Yee3";
         }
     }
 }
