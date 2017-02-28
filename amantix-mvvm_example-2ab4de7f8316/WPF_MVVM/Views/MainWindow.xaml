@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_MVVM"
+        xmlns:dd="urn:gong-wpf-dragdrop"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1280">
+        Title="MainWindow" Height="720" Width="1280" Loaded="Window_Loaded">
     <Grid ShowGridLines="True">
 
         <Grid.RowDefinitions>
@@ -21,25 +22,24 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="35" FontFamily="Georgia">
-            Goals
-        </TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Goals" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="35" FontFamily="Segoe UI"/>
 
-        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="35" FontFamily="Georgia">
-            Action
-        </TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="Action" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="35" FontFamily="Segoe UI"/>
 
-        <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="35" FontFamily="Georgia">
-            Done
-        </TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="Done" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="35" FontFamily="Segoe UI"/>
 
-        <TextBlock Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="35" FontFamily="Georgia">
-            Canceled
-        </TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="3" Text="Canceled" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="35" FontFamily="Segoe UI"/>
 
-        <ListView Grid.Row="1" Grid.Column="0" Background="LightGray" Name="GoalsList" ItemsSource="{Binding Goals}" IsSynchronizedWithCurrentItem="True"
+        <ListView x:Name="GoalsList" Grid.Row="1" Grid.Column="0" Background="LightGray" ItemsSource="{Binding Goals, Mode=TwoWay}" IsSynchronizedWithCurrentItem="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch"
-                  MouseDoubleClick="List_MouseDoubleClick">
+                  MouseDoubleClick="List_MouseDoubleClick"
+                  SelectedItem="{Binding SelectedNoteViewModel}">
+                  <!--dd:DragDrop.IsDragSource="True"
+                  dd:DragDrop.IsDropTarget="True"
+                  dd:DragDrop.UseDefaultDragAdorner="True"
+                  dd:DragDrop.UseDefaultEffectDataTemplate="True"
+                  dd:DragDrop.DragDirectlySelectedOnly ="True"
+                  dd:DragDrop.DropHandler="{Binding}" Margin="0,5,0,0">>-->
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border Background="LightBlue" BorderBrush="Blue" BorderThickness="7,1,1,1" Margin="7.5">
@@ -50,15 +50,11 @@
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <EventSetter Event="MouseDoubleClick" Handler="List_MouseDoubleClick" />
-                </Style>
-            </ListView.ItemContainerStyle>
+
         </ListView>
 
-        <ListView Grid.Row="1" Grid.Column="1" Background="LightGray" Name="ActiveList" ItemsSource="{Binding Active}" IsSynchronizedWithCurrentItem="True"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
+        <ListView x:Name="ActiveList" Grid.Row="1" Grid.Column="1" Background="LightGray" ItemsSource="{Binding Active, Mode=TwoWay}" IsSynchronizedWithCurrentItem="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" AllowDrop="True">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border Background="LightYellow" BorderBrush="Yellow" BorderThickness="7,1,1,1" Margin="7.5">
@@ -71,39 +67,112 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <ListView Grid.Row="1" Grid.Column="2" Background="LightGray" Name="doneList" ItemsSource="{Binding Done}" IsSynchronizedWithCurrentItem="True"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
+        <ListView x:Name="DoneList" Grid.Row="1" Grid.Column="2" Background="LightGray" ItemsSource="{Binding Done, Mode=TwoWay}" IsSynchronizedWithCurrentItem="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" AllowDrop="True">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border Name="borderDone" Background="LightGreen" BorderBrush="Green" BorderThickness="7,1,1,1" Margin="7.5">
-                        <StackPanel Name="stackDone" Margin="10"  MouseEnter="List_MouseEnter" MouseLeave="List_MouseLeave">
+                    <Border x:Name="borderDone" Background="LightGreen" BorderBrush="Green" BorderThickness="7,1,1,1" Margin="7.5">
+                        <StackPanel x:Name="stackDone" Margin="10">
                             <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
                             <TextBlock Text="{Binding Description}" />
                         </StackPanel>
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimation To="-1,7.5,-1,7.5" Duration="0:0:0.100"                   
+                                            Storyboard.TargetProperty="Margin"/>
+                                        <ThicknessAnimation To="25,1,1,1" Duration="0:0:0.100"                   
+                                            Storyboard.TargetProperty="BorderThickness"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimation To="7.5" Duration="0:0:0.100"                   
+                                            Storyboard.TargetProperty="Margin"/>
+                                        <ThicknessAnimation To="7,1,1,1" Duration="0:0:0.100"                   
+                                            Storyboard.TargetProperty="BorderThickness"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <ListView Grid.Row="1" Grid.Column="3" Background="LightGray" Name="canceledList" ItemsSource="{Binding Canceled}" IsSynchronizedWithCurrentItem="True"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
+        <ListView x:Name="CanceledList" Grid.Row="1" Grid.Column="3" Background="LightGray" ItemsSource="{Binding Canceled, Mode=TwoWay}" IsSynchronizedWithCurrentItem="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" AllowDrop="True">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border Background="LightSalmon" BorderBrush="Red" BorderThickness="7,1,1,1" Margin="7.5">
-                        <StackPanel Margin="10" >
-                            <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Description}" />
-                        </StackPanel>
+                        <Grid ShowGridLines="True" x:Name="gridDone" Margin="0,10,10,10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.2*"/>
+                                <ColumnDefinition Width="0.8*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Background= "Red" Margin="0">
+                                <Button BorderThickness="0" Background="Red">+</Button>
+                                <Button>-</Button>
+                                <StackPanel.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter">
+                                        <BeginStoryboard>
+                                        <Storyboard>
+                                                <ThicknessAnimation To="-5,0,-5,0" Duration="0:0:0.100"                   
+                                            Storyboard.TargetProperty="Margin"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ThicknessAnimation To="0" Duration="0:0:0.100"                   
+                                            Storyboard.TargetProperty="Margin"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </StackPanel.Triggers>
+                            </StackPanel>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" FontWeight="Bold"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" />
+                        </Grid>
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <TextBox Grid.Row="0" Grid.Column="4" x:Name="textBox1" SpellCheck.IsEnabled="True" Language="ru-ru" FontSize="35" FontFamily="Georgia" VerticalContentAlignment="Center"
-                 HorizontalContentAlignment="Center"/>
+        <ContentControl x:Name="RightContent" Grid.Column="4" Content="{Binding }" Margin="10,0,10,10">
+            <ContentControl.ContentTemplate>
+                <DataTemplate DataType="viewModels:TaskViewModel">
+                    <Border>
+                        <StackPanel>
+                            <TextBlock Text="Наименование:"/>
+                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+                            <TextBlock Text="Описание:"/>
+                            <TextBox TextWrapping="Wrap"
+                                     Height="{Binding ActualHeight, ElementName=RightContent}" VerticalScrollBarVisibility="Hidden" AcceptsReturn="True" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+                            
+                            <StackPanel>
+                                <Button Content="111" Command="{Binding IncreaseProrityCommand}" Margin="10,0"/>
+                                <Button Content="222" Command="{Binding IncreaseProrityCommand}" Margin="10,0"/>
+                                <Button Content="333" Command="{Binding IncreaseProrityCommand}" Margin="10,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
+        <TextBox Grid.Row="0" Grid.Column="4" x:Name="textBox1" SpellCheck.IsEnabled="True" Language="ru-ru" FontSize="35" FontFamily="Segoe UI" VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Center" Text="{Binding noteData.Name}"/>
 
         <TextBox Grid.Row="1" Grid.Column="4" x:Name="textBox2" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="True" Language="ru-ru" TextWrapping="Wrap" Padding="15"
-                 FontSize="20" FontFamily="Georgia"/>
+                 FontSize="20" FontFamily="Segoe UI" Text="{Binding noteData.Description}"/>
 
         <!--<Button x:Name="button_AddNote" Content="Add" Click="button_AddNote_Click"/>-->
 

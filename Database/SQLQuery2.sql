@@ -27,4 +27,5 @@ create table Orders(
 	constraint pk_orders primary key(kod_order),
 	constraint fk_ord_cust foreign key(kod_cust) references Customers(kod_cust) on delete cascade on update cascade,
 	constraint fk_ord_tov foreign key(kod_tovar) references Tovary(kod_tovar));
-	*/
+*/
+

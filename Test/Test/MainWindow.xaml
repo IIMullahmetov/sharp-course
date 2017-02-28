@@ -11,10 +11,5 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-
-        <ListView ItemsSource="{Binding Goals}">
-            <ListView.ItemTemplate>
-            D
-        </ListView>
     </Grid>
 </Window>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WPF_MVVM.Context;
+using WPF_MVVM.Models;
+using WPF_MVVM.ViewModels;
 
 namespace WPF_MVVM
 {
@@ -21,9 +25,17 @@ namespace WPF_MVVM
     /// </summary>
     public partial class MainWindow : Window
     {
+        private TaskDbContext _context = new TaskDbContext();
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainViewModel();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            //_context.Notes.Load();
+            
         }
 
         private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -36,25 +48,46 @@ namespace WPF_MVVM
             }
         }
 
+        //private void List_MouseDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    TextBox tb = (TextBox)sender;
+        //    DragDrop.DoDragDrop(tb, tb.Text, DragDropEffects.Move);
+        //}
+
         private void List_MouseEnter(object sender, MouseEventArgs e)
         {
+            /*
+            DoubleAnimation borderAnimation = new DoubleAnimation();
+            borderAnimation.From = ;
+            borderAnimation.To = 100;
+            borderAnimation.Duration = new Duration(new TimeSpan(0, 0, 5));
+            borderAnimation.FillBehavior = FillBehavior.HoldEnd;
+            borderAnimation.BeginAnimation(Border.HeightProperty, borderAnimation);
+            */
+            /*
             var enterAnimation = new ThicknessAnimation();
-            enterAnimation.From = doneList.Margin;
-            enterAnimation.To = new Thickness(5);
-            enterAnimation.Duration = TimeSpan.FromSeconds(1);
-            doneList.BeginAnimation(MarginProperty, enterAnimation);
+            enterAnimation.From = DoneList.Margin;
+            enterAnimation.To = new Thickness(-5);
+            enterAnimation.Duration = TimeSpan.FromSeconds(0.5);
+            DoneList.BeginAnimation(MarginProperty, enterAnimation);
+            */
         }
 
-        
         private void List_MouseLeave(object sender, MouseEventArgs e)
         {
             var enterAnimation = new ThicknessAnimation();
-            enterAnimation.From = doneList.Margin;
-            enterAnimation.To = new Thickness(5);
-            enterAnimation.Duration = TimeSpan.FromSeconds(1);
-            doneList.BeginAnimation(MarginProperty, enterAnimation);
+            enterAnimation.From = DoneList.Margin;
+            enterAnimation.To = new Thickness(0);
+            enterAnimation.Duration = TimeSpan.FromSeconds(0.5);
+            DoneList.BeginAnimation(MarginProperty, enterAnimation);
         }
-        
+
+
+        private void List_Drop(object sender, DragEventArgs e)
+        {
+
+        }
+
         private void button_AddNote_Click(object sender, RoutedEventArgs e)
         {
 
@@ -64,5 +97,7 @@ namespace WPF_MVVM
         {
 
         }
+
+
     }
 }

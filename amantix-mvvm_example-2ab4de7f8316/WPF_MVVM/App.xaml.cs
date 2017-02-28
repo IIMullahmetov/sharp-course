@@ -6,6 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using WPF_MVVM.Commands;
+using WPF_MVVM.Context;
+using WPF_MVVM.Entities;
 using WPF_MVVM.Models;
 using WPF_MVVM.ViewModels;
 using WPF_MVVM.Views;
@@ -22,25 +25,25 @@ namespace WPF_MVVM
             //var view = new StartWindow();
             var view = new MainWindow();
 
-            List list = new List();
+            //List list = new List();
 
-            Project project = new Project("First Project", "Comment1");
-            list.Projects.Add(project);
+            //Project project = new Project("First Project", "Comment1");
+            //list.Projects.Add(project);
 
-            Project project1 = new Project("Second Project", "Comment2");
-            list.Projects.Add(project1);
+            //Project project1 = new Project("Second Project", "Comment2");
+            //list.Projects.Add(project1);
 
-            project.Goals.Add(new Note("First Name", "First Description....................kuhkuhkuhkuhhkuhkuhkuhkuhkuhkuhkuhkuhkuhkuhkuhkuhkuhkuhkuhkuhukuhkuh"));
-            project.Goals.Add(new Note("Second Name", "Second Description"));
+            //project.Goals.Add(new Note("First Name", "First Description....................kuhkuhkuhkuhhkuhkuhkuhkuhkuhkuh", TimeSpan.Zero, DateTime.Now));
+            //project.Goals.Add(new Note("Second Name", "Second Description", TimeSpan.Zero, DateTime.Now));
 
-            project.Active.Add(new Note("Active 1", "It's active 1"));
-            project.Active.Add(new Note("Active 2", "It's active 2"));
+            //project.Active.Add(new Note("Active 1", "It's active 1", TimeSpan.Zero, DateTime.Now));
+            //project.Active.Add(new Note("Active 2", "It's active 2", TimeSpan.Zero, DateTime.Now));
 
-            project.Done.Add(new Note("Done 1", "It's done 1"));
-            project.Done.Add(new Note("Done 2", "It's done 2"));
+            //project.Done.Add(new Note("Done 1", "It's done 1", TimeSpan.Zero, DateTime.Now));
+            //project.Done.Add(new Note("Done 2", "It's done 2", TimeSpan.Zero, DateTime.Now));
 
-            project.Canceled.Add(new Note("Canceled 1", "It's canceled 1"));
-            project.Canceled.Add(new Note("Canceled 2", "It's canceled 2"));
+            //project.Canceled.Add(new Note("Canceled 1", "It's canceled 1", TimeSpan.Zero, DateTime.Now));
+            //project.Canceled.Add(new Note("Canceled 2", "It's canceled 2", TimeSpan.Zero, DateTime.Now));
 
 
             /*
@@ -60,12 +63,40 @@ namespace WPF_MVVM
 
             //var StartViewModel = new StartViewModel(list);
             //view.DataContext = StartViewModel;
-        
+
+            //DataBaseInitializer dbi = new DataBaseInitializer();
+            //dbi.Seed();
             
-            var MainViewModel = new MainViewModel(project);
+            
+            
+            var notes = new List<Note>
+            {
+                new Note(NoteCategory.Goals, "name1", "desc1", TimeSpan.Zero, DateTime.Now),
+                new Note(NoteCategory.Goals, "name2", "desc2", TimeSpan.Zero, DateTime.Now),
+                new Note(NoteCategory.Active, "name3", "desc3", TimeSpan.Zero, DateTime.Now),
+                new Note(NoteCategory.Active, "name4", "desc4", TimeSpan.Zero, DateTime.Now),
+                new Note(NoteCategory.Done, "name5", "desc5", TimeSpan.Zero, DateTime.Now),
+                new Note(NoteCategory.Done, "name6", "desc6", TimeSpan.Zero, DateTime.Now),
+                new Note(NoteCategory.Canceled, "name7", "desc7", TimeSpan.Zero, DateTime.Now),
+                new Note(NoteCategory.Canceled, "name8", "desc8", TimeSpan.Zero, DateTime.Now),
+            };
+
+            foreach (var note in notes) {
+                //.Add(note);
+                //context.Notes.Add(note); 
+
+            //context.SaveChanges();
+            //base.Seed(context);
+            }
+            
+
+            var MainViewModel = new MainViewModel();
             view.DataContext = MainViewModel;
-            
+
             view.Show();
+
+            //new Excel(list, project, false);
+            //new Excel(list, project, true);
         }
     }
 }
