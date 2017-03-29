@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TimeTable.StartPage"
+             Title="Select group"
+             BackgroundColor="Gray">
+  <StackLayout x:Name="stackLayout" HorizontalOptions="Center" VerticalOptions="Center" Spacing="30">
+    <Picker x:Name="GroupPicker"/>
+    <Button x:Name="ConfirmButton" Text="Подтвердить" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
+            BackgroundColor="Blue" TextColor="White"
+            Clicked="ConfirmClicked"/>
+    
+
+
+
+  </StackLayout>
+</ContentPage>
