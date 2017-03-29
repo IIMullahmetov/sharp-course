@@ -243,3 +243,17 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/RemoteService/MobileApp
+/RemoteService/RemoteService
+/RemoteService/RemoteService.sln
+/RemoteService/ConsoleTest/PrintHook64.dll
+/RemoteService/ConsoleTest/PrintHook32.dll
+/RemoteService/ConsoleTest/ABCpdf10-64.dll
+/RemoteService/ConsoleTest/ABCpdf10-32.dll
+/RemoteService/ConsoleTest/ABCpdf.chm
+/RemoteService/ConsoleTest/3DGlue10-64.dll
+/RemoteService/ConsoleTest/3DGlue10-32.dll
+/RemoteService/ConsoleTest/packages.config
+/RemoteService/ConsoleTest/ConsoleTest.csproj
+/RemoteService/ConsoleTest/App.config
+/RemoteService/ConsoleTest/Properties
