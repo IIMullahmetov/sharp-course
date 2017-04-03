@@ -16,7 +16,7 @@ namespace MobileApp
 		{
 			InitializeComponent();
             //ThreadPool.QueueUserWorkItem(new WaitCallback(cc.Connection), "10.10.0.1");
-            AsyncConnection();
+            //AsyncConnection();
         }
 
         public async void AsyncConnection()
@@ -34,7 +34,8 @@ namespace MobileApp
         private void OKButton_Clicked(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(IPEntry.Text)) {
-            //ThreadPool.QueueUserWorkItem(new WaitCallback(cc.Connection), IPEntry.Text);
+                //ThreadPool.QueueUserWorkItem(new WaitCallback(cc.Connection), IPEntry.Text);
+                AsyncConnection();
                 OKButton.BackgroundColor = Color.Red;
             }
             else

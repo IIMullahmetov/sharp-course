@@ -48,8 +48,8 @@ namespace MobileApp
 
         public void SetIPAddress(string IP)
         {
-            ipAddress = IPAddress.Parse("2a02:2698:2825:11a1:b18d:9818:1b32:4ca"); //присваиваем IP-адрес
-            //ipAddress = IPAddress.Parse(IP); //присваиваем IP-адрес
+            //ipAddress = IPAddress.Parse("2a02:2698:2825:11a1:b18d:9818:1b32:4ca"); //присваиваем IP-адрес
+            ipAddress = IPAddress.Parse(IP); //присваиваем IP-адрес
         }
 
         public void Configure()
