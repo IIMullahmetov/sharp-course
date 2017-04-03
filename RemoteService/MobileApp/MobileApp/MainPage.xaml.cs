@@ -80,5 +80,11 @@ namespace MobileApp
             AsyncRequest("-4");
             ExitButton.BackgroundColor = Color.Red;
         }
+
+        private void images_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            var index = ((images.ItemsSource as List<ImageSource>).IndexOf(e.SelectedItem as ImageSource) + 1).ToString();
+            AsyncRequest(index);
+        }
     }
 }

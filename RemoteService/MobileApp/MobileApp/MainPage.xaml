@@ -3,35 +3,41 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MobileApp"
              x:Class="MobileApp.MainPage">
-    <StackLayout>
-        <Entry x:Name="IPEntry"/>
-        <Button x:Name="OKButton" Text="OK" Clicked="OKButton_Clicked"/>
-        <Button x:Name="NextButton" Text=">" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
-            BackgroundColor="Blue" TextColor="White"
-            Clicked="NextClicked"/>
-        <Button x:Name="PrevButton" Text="&lt;" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
-            BackgroundColor="Blue" TextColor="White"
-            Clicked="PrevClicked"/>
-        <Button x:Name="PlayButton" Text="Play" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
-            BackgroundColor="Blue" TextColor="White"
-            Clicked="PlayClicked"/>
-        <Button x:Name="ExitButton" Text="X" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
-            BackgroundColor="Blue" TextColor="White"
-            Clicked="ExitClicked"/>
-        <Image x:Name="Screen" Source="Icon.png"/>
+    <StackLayout Orientation="Vertical">
 
-        <ListView x:Name="images">
+        <StackLayout Orientation="Horizontal">
+            <Entry x:Name="IPEntry" Placeholder="Host IP Address" HorizontalOptions="FillAndExpand"/>
+            <Button x:Name="OKButton" Text="OK" Clicked="OKButton_Clicked" HorizontalOptions="End"/>
+        </StackLayout>
+
+        <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+            <Button x:Name="PrevButton" Text="&lt;" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
+                BackgroundColor="Blue" TextColor="White"
+                Clicked="PrevClicked"/>
+            <Button x:Name="NextButton" Text=">" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
+              BackgroundColor="Blue" TextColor="White"
+              Clicked="NextClicked"/>
+            <Button x:Name="PlayButton" Text="Play" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
+                BackgroundColor="Blue" TextColor="White"
+               Clicked="PlayClicked"/>
+            <Button x:Name="ExitButton" Text="X" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
+               BackgroundColor="Blue" TextColor="White"
+               Clicked="ExitClicked"/>
+        </StackLayout>
+
+        <ListView x:Name="images" RowHeight="300" ItemSelected="images_ItemSelected">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <ViewCell.View>
                             <StackLayout Orientation="Horizontal">
-                                <Image Source="{Binding .}" />
+                                <Image Source="{Binding .}" Aspect="AspectFill"/>
                             </StackLayout>
                         </ViewCell.View>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        
     </StackLayout>
 </ContentPage>
