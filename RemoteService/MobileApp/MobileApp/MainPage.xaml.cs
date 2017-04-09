@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Android.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,13 +11,13 @@ namespace MobileApp
 {
 	public partial class MainPage : ContentPage
 	{
-        ClientConnection cc = new ClientConnection();
+        static ClientConnection cc = new ClientConnection();
 
         public MainPage()
 		{
 			InitializeComponent();
             //ThreadPool.QueueUserWorkItem(new WaitCallback(cc.Connection), "10.10.0.1");
-            //AsyncConnection();
+            AsyncConnection();
         }
 
         public async void AsyncConnection()
@@ -44,17 +45,9 @@ namespace MobileApp
             }
         }
            
-        public async void AsyncRequest(string message)
+        public static async void AsyncRequest(string message)
         {
-            try
-            {
-                int code = await cc.Request(message);
-                Console.WriteLine(code);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+             int code = await cc.Request(message);
         }
 
         private void NextClicked(object sender, EventArgs e)
@@ -85,6 +78,11 @@ namespace MobileApp
         {
             var index = ((images.ItemsSource as List<ImageSource>).IndexOf(e.SelectedItem as ImageSource) + 1).ToString();
             AsyncRequest(index);
+        }
+
+        public static void Request(string message)
+        {
+            AsyncRequest(message);
         }
     }
 }

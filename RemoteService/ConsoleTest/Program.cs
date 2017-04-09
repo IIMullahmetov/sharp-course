@@ -18,17 +18,19 @@ namespace ConsoleTest
         static void Main(string[] args)
         {
             string savePath = "C:\\RemoteService\\Pictures\\";
-
+            string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)" };
+            
             string pathpp = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 8.pptx";
-            PowerPointProgram presenter = new PowerPointProgram(pathpp, savePath);
-
-            //string pathar = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 10.pdf";
-            //AdobeReaderProgram presenter = new AdobeReaderProgram(pathar, savePath);
-
+            PowerPointProgram presenter = new PowerPointProgram(pathpp, savePath, 96);
+            
+            /*
+            string pathar = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 16.pdf";
+            AdobeReaderProgram presenter = new AdobeReaderProgram(pathar, savePath, 96);
+            */
             ServerConnection cc = new ServerConnection();
             cc.Connection(savePath, presenter.getSlidesCount(), 1024, 4, presenter.getKeys());
-
-            //cc.Connection(savePath, 86, 1024, 4);
+            
+            //cc.Connection(savePath, 72, 1024, 4, keys);
 
 
             Console.ReadLine();

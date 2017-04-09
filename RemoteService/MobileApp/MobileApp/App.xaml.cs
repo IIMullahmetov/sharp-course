@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Android.Content;
+using MobileApp.Droid;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,23 +14,23 @@ namespace MobileApp
 		public App ()
 		{
 			InitializeComponent();
-
-			MainPage = new MainPage();
 		}
 
 		protected override void OnStart ()
 		{
-			// Handle when your app starts
-		}
+            // Handle when your app starts
+            var mainPage = new MainPage();
+            MainPage = mainPage;
+        }
 
-		protected override void OnSleep ()
+        protected override void OnSleep ()
 		{
-			// Handle when your app sleeps
-		}
+            // Handle when your app sleeps
+        }
 
 		protected override void OnResume ()
 		{
-			// Handle when your app resumes
-		}
+            // Handle when your app resumes
+        }
 	}
 }

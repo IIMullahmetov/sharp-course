@@ -1,33 +1,26 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 using Android.App;
-using Android.Content.PM;
+using Android.Content;
+using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.OS;
 
 namespace MobileApp.Droid
 {
-    [Activity(Label = "MobileApp", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    [Activity(Label = "MobileApp", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = false)]
+    class SleepActivity : Activity
     {
         protected override void OnCreate(Bundle bundle)
         {
-            TabLayoutResource = Resource.Layout.Tabbar;
-            ToolbarResource = Resource.Layout.Toolbar;
-
             base.OnCreate(bundle);
-
             global::Xamarin.Forms.Forms.Init(this, bundle);
-            LoadApplication(new MobileApp.App());
         }
-/*
-        protected override void OnPause()
-        {
-            StartActivity(typeof(SleepActivity));
-        }
-*/
+
         public override bool OnKeyUp(Keycode keyCode, KeyEvent e)
         {
             if (keyCode == Keycode.VolumeDown)
@@ -57,11 +50,5 @@ namespace MobileApp.Droid
             }
             return base.OnKeyDown(keyCode, e);
         }
-
-        public void GoToActivity()
-        {
-            StartActivity(typeof(SleepActivity));
-        }
     }
 }
-

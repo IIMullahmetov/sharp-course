@@ -22,12 +22,13 @@ namespace ConsoleTest.Presenters
 
         int count;
 
-        public PowerPointProgram(string path, string savePath)
+        public PowerPointProgram(string path, string savePath, int dpi)
         {
-            Launch(path, savePath);
+            Launch(path, dpi);
+            Rendering(savePath);
         }
 
-        public void Launch(string path, string savePath)
+        public void Launch(string path, int dpi)
         {
             try
             {
@@ -36,16 +37,6 @@ namespace ConsoleTest.Presenters
                 oPre = oPres.Open(path, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse, Office.MsoTriState.msoTrue); //открываем презентацию
                 oSlides = oPre.Slides; //считываем слайды
                 count = oPre.Slides.Count;
-
-                if (!Directory.Exists(savePath))
-                {
-                    Directory.CreateDirectory(savePath);
-                }
-
-                foreach (PowerPoint.Slide slide in oSlides) {
-                    string p = slide.SlideIndex + ".jpg";
-                    slide.Export(savePath + p, "JPG", 0, 0);
-                }
             }
             catch (Exception e)
             {
@@ -53,9 +44,23 @@ namespace ConsoleTest.Presenters
             }
             finally
             {
-                oPre.Close(); //закрываем презентацию
-                oPowerPoint.Quit(); //выходим из программы
-                Clean(); //чистим ресурсы
+                //oPre.Close(); //закрываем презентацию
+                //oPowerPoint.Quit(); //выходим из программы
+                //Clean(); //чистим ресурсы
+            }
+        }
+
+        public void Rendering(string savePath)
+        {
+            if (!Directory.Exists(savePath))
+            {
+                Directory.CreateDirectory(savePath);
+            }
+
+            foreach (PowerPoint.Slide slide in oSlides)
+            {
+                string p = slide.SlideIndex + ".jpg";
+                slide.Export(savePath + p, "JPG", 0, 0);
             }
         }
 

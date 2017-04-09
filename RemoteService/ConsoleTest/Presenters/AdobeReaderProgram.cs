@@ -11,14 +11,14 @@ namespace ConsoleTest.Presenters
 {
     class AdobeReaderProgram
     {
-        string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", ""};
+        string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)" };
 
         int count;
 
-        public AdobeReaderProgram(string path, string savePath)
+        public AdobeReaderProgram(string path, string savePath, int dpi)
         {
             Launch(path);
-            Rendering(path, savePath);
+            Rendering(path, savePath, dpi);
         }
 
         public void Launch(string path)
@@ -33,11 +33,11 @@ namespace ConsoleTest.Presenters
             Process process = Process.Start(startInfo);
         }
 
-        public void Rendering(string path, string savePath)
+        public void Rendering(string path, string savePath, int dpi)
         {
             Doc theDoc = new Doc();
             theDoc.Read(path);
-            theDoc.Rendering.DotsPerInch = 96;
+            theDoc.Rendering.DotsPerInch = dpi;
             count = theDoc.PageCount;
 
             if (!Directory.Exists(savePath))

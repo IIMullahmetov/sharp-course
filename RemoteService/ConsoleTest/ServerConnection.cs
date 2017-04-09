@@ -54,7 +54,7 @@ namespace ConsoleTest
         public void Configure()
         {
             host = Dns.GetHostName(); // получение имени компьютера
-            string ip = Dns.GetHostEntry(host).AddressList[1].ToString(); // получение IP-адреса // 1 для дома, 3 для универа
+            string ip = Dns.GetHostEntry(host).AddressList[4].ToString(); // получение IP-адреса // 1 для дома, 3 для универа
             ipAddress = IPAddress.Parse(ip); //присваиваем IP-адрес
             Console.WriteLine(ip);
 
@@ -87,6 +87,7 @@ namespace ConsoleTest
             {
                 byte[] byteImage = ImageToByteArray(getImage(savePath, i)); //берем изображение и переводим в массив байт
                 SendImages(byteImage, bufferLength); //отправка изображения
+                Console.WriteLine(i);
             }
             return i;
         }
@@ -147,17 +148,17 @@ namespace ConsoleTest
                handler.Close();
             }
         }
-
+        
         public Task<string> AsyncParseAndSendCode(byte[] receiveBuffer)
         {
             return Task.Run(() => ParseAndSendCode(receiveBuffer));
         }
-
+        
         public string ParseAndSendCode(byte[] receiveBuffer)
         {
-            string code = ParseCommand(receiveBuffer);
-            SendCode(code);
-            return code;
+            ParseCommand(receiveBuffer);
+            SendResponse();
+            return "0";
         }
 
         public string ParseCommand(byte[] receiveBuffer)
@@ -183,53 +184,19 @@ namespace ConsoleTest
                 case codeClose: //закрытие программы
                     break;
                 default: //переход к слайду
-                    string sendCode = code + keys[4];
+                    string sendCode = code + keys[4]; //для PP
+                    //string index = code + "~"; string sendCode = keys[4] + index; // для AR
                     SendKeys.SendWait(sendCode);
                     break;
             }
             return code;
         }
 
-        public void SendCode(string code) //отправка данных (команды)
+        public void SendResponse() //отправка данных (команды)
         {
-            byte[] sendBuffer = Encoding.Unicode.GetBytes(code); //буфер для отправки
+            byte[] sendBuffer = Encoding.Unicode.GetBytes("0"); //буфер для отправки
 
             handler.Send(sendBuffer); //отправка данных
         }
-
-/*
-                public void FirstReceive() // принимаем конфигурационные данные устройства
-                {
-                    byte[] receiveBuffer = new byte[1024];
-
-                    handler.Receive(receiveBuffer);
-
-                    Console.WriteLine(Encoding.Unicode.GetString(receiveBuffer));
-                }
-
-                public void FirstSend() //отправляем данные для устройства (например, название компа для сохранения)
-                {
-                    byte[] sendBuffer = Encoding.Unicode.GetBytes(host);
-
-                    handler.Send(sendBuffer);
-                }
-        */
-        /*
-                        internal static bool Waiting(IAsyncResult ar)
-                        {
-                            int i = 0;
-                            while (ar.IsCompleted == false)
-                            {
-                                if (i++ > 40)
-                                {
-                                    Console.WriteLine("Timed out.");
-                                    return false;
-                                }
-                                Console.Write(".");
-                                Thread.Sleep(500);
-                            }
-                            return true;
-                        }
-        */
     }
 }
