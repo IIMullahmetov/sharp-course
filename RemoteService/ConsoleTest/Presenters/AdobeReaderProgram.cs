@@ -9,34 +9,22 @@ using WebSupergoo.ABCpdf10;
 
 namespace ConsoleTest.Presenters
 {
-    class AdobeReaderProgram
+    class AdobeReaderProgram : Presenter
     {
+        string processName = "AcroRd32.exe";
+
         string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)" };
 
-        int count;
-
-        public AdobeReaderProgram(string path, string savePath, int dpi)
+        public AdobeReaderProgram(string filePath, string savePath, int dpi)
         {
-            Launch(path);
-            Rendering(path, savePath, dpi);
+            Launch(processName, filePath);
+            Rendering(filePath, savePath, dpi);
         }
 
-        public void Launch(string path)
-        {
-            string quotes = "\"";
-
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = "AcroRd32.exe";
-            startInfo.Arguments = "/n " + quotes + path + quotes;
-            startInfo.WindowStyle = ProcessWindowStyle.Maximized;
-
-            Process process = Process.Start(startInfo);
-        }
-
-        public void Rendering(string path, string savePath, int dpi)
+        public override void Rendering(string filePath, string savePath, int dpi)
         {
             Doc theDoc = new Doc();
-            theDoc.Read(path);
+            theDoc.Read(filePath);
             theDoc.Rendering.DotsPerInch = dpi;
             count = theDoc.PageCount;
 
@@ -54,14 +42,19 @@ namespace ConsoleTest.Presenters
             theDoc.Clear();
         }
 
-        public int getSlidesCount()
-        {
-            return count;
-        }
-
-        public string[] getKeys()
+        public override string[] getKeys()
         {
             return keys;
+        }
+
+        public override Process getProcess()
+        {
+            foreach (var p in Process.GetProcesses())
+            {
+                if (p.ProcessName == process.ProcessName && p.Id != process.Id)
+                    return p;
+            }
+            return null;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using MobileApp.Droid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace MobileApp
 		protected override void OnStart ()
 		{
             // Handle when your app starts
-            var mainPage = new MainPage();
+            var mainPage = new MainPage(1024, 4);
             MainPage = mainPage;
         }
 

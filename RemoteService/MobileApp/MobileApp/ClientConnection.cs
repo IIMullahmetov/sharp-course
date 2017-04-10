@@ -22,6 +22,16 @@ namespace MobileApp
         IPEndPoint ipEndPoint;
         // Сокет
         Socket socket;
+        //Размер буфера для изображений
+        int imageBufferLength;
+        //Размер буфера для кода
+        int codeBufferLength;
+
+        public ClientConnection(int imageBufferLength, int codeBufferLength)
+        {
+            this.imageBufferLength = imageBufferLength;
+            this.codeBufferLength = codeBufferLength;
+        }
 
         public Task<List<ImageSource>> Connection(object message)
         {
@@ -29,13 +39,13 @@ namespace MobileApp
             {
                 SetIPAddress((string)message);
                 Configure();
-                return GetReceiveImages(4, 1024);
+                return GetReceiveImages(codeBufferLength, imageBufferLength);
             });
         }
 
         public void SetIPAddress(string IP)
         {
-            ipAddress = IPAddress.Parse("192.168.0.6"); //присваиваем IP-адрес
+            ipAddress = IPAddress.Parse("2a02:2698:2822:4f08:7c0a:59ad:4e4f:bdc5"); //присваиваем IP-адрес
             //ipAddress = IPAddress.Parse(IP); //присваиваем IP-адрес
         }
 
@@ -120,7 +130,7 @@ namespace MobileApp
 
         public int ReceiveCode()
         {
-            byte[] receiveBuffer = new byte[4];
+            byte[] receiveBuffer = new byte[codeBufferLength];
 
             socket.Receive(receiveBuffer);
 

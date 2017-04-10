@@ -34,8 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABCpdf, Version=10.1.2.1, Culture=neutral, PublicKeyToken=a7a0b3f5184f2169, processorArchitecture=MSIL">
-      <HintPath>..\packages\ABCpdf.10.1.2.1\lib\net40\ABCpdf.dll</HintPath>
+    <Reference Include="ABCpdf, Version=10.1.2.2, Culture=neutral, PublicKeyToken=a7a0b3f5184f2169, processorArchitecture=MSIL">
+      <HintPath>..\packages\ABCpdf.10.1.2.2\lib\net40\ABCpdf.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.PowerPoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Presenters\AdobeReaderProgram.cs" />
     <Compile Include="Presenters\PowerPointProgram.cs" />
+    <Compile Include="Presenters\Presenter.cs" />
     <Compile Include="ServerConnection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

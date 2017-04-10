@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,32 +12,46 @@ using PowerPoint = Microsoft.Office.Interop.PowerPoint;
 
 namespace ConsoleTest.Presenters
 {
-    class PowerPointProgram
+    class PowerPointProgram : Presenter
     {
         PowerPoint.Application oPowerPoint = null;
         PowerPoint.Presentations oPres = null;
         PowerPoint.Presentation oPre = null;
         PowerPoint.Slides oSlides = null;
 
+        string processName = "POWERPNT.exe";
+
         string[] keys = { "{RIGHT}", "{LEFT}", "{F5}", "{ESC}", "~"};
 
-        int count;
-
-        public PowerPointProgram(string path, string savePath, int dpi)
+        public PowerPointProgram(string filePath, string savePath, int dpi)
         {
-            Launch(path, dpi);
-            Rendering(savePath);
+            Launch(processName, filePath);
+            Rendering(filePath, savePath, dpi);
         }
 
-        public void Launch(string path, int dpi)
+        public override void Rendering(string filePath, string savePath, int dpi)
         {
             try
             {
                 oPowerPoint = new PowerPoint.Application(); //запускаем приложение
                 oPres = oPowerPoint.Presentations; //презентации
-                oPre = oPres.Open(path, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse, Office.MsoTriState.msoTrue); //открываем презентацию
+                oPre = oPres.Open(filePath, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse); //открываем презентацию
                 oSlides = oPre.Slides; //считываем слайды
                 count = oPre.Slides.Count;
+
+                if (!Directory.Exists(savePath))
+                {
+                    Directory.CreateDirectory(savePath);
+                }
+
+                int width = dpi * 10;
+                int height = Convert.ToInt32(dpi * 7.5);
+
+                foreach (PowerPoint.Slide slide in oSlides)
+                {
+                    string p = slide.SlideIndex + ".jpg";
+                    slide.Export(savePath + p, "JPG", width, height);
+                }
             }
             catch (Exception e)
             {
@@ -46,32 +61,8 @@ namespace ConsoleTest.Presenters
             {
                 //oPre.Close(); //закрываем презентацию
                 //oPowerPoint.Quit(); //выходим из программы
-                //Clean(); //чистим ресурсы
+                Clean(); //чистим ресурсы
             }
-        }
-
-        public void Rendering(string savePath)
-        {
-            if (!Directory.Exists(savePath))
-            {
-                Directory.CreateDirectory(savePath);
-            }
-
-            foreach (PowerPoint.Slide slide in oSlides)
-            {
-                string p = slide.SlideIndex + ".jpg";
-                slide.Export(savePath + p, "JPG", 0, 0);
-            }
-        }
-
-        public int getSlidesCount()
-        {
-            return count;
-        }
-
-        public string[] getKeys()
-        {
-            return keys;
         }
 
         public void Clean()
@@ -96,6 +87,16 @@ namespace ConsoleTest.Presenters
                 Marshal.FinalReleaseComObject(oPowerPoint);
                 oPowerPoint = null;
             }
+        }
+
+        public override string[] getKeys()
+        {
+            return keys;
+        }
+
+        public override Process getProcess()
+        {
+            return process;
         }
     }
 }

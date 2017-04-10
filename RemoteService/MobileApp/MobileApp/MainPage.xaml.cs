@@ -11,12 +11,12 @@ namespace MobileApp
 {
 	public partial class MainPage : ContentPage
 	{
-        static ClientConnection cc = new ClientConnection();
+        static ClientConnection cc;
 
-        public MainPage()
+        public MainPage(int imageBufferLength, int codeBufferLength)
 		{
 			InitializeComponent();
-            //ThreadPool.QueueUserWorkItem(new WaitCallback(cc.Connection), "10.10.0.1");
+            cc = new ClientConnection(imageBufferLength, codeBufferLength);
             AsyncConnection();
         }
 
@@ -47,7 +47,8 @@ namespace MobileApp
            
         public static async void AsyncRequest(string message)
         {
-             int code = await cc.Request(message);
+            int code = await cc.Request(message);
+            //TODO: ЗДЕСЬ РЕАКЦИЯ НА ОТВЕТ
         }
 
         private void NextClicked(object sender, EventArgs e)

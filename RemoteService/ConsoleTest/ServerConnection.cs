@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +30,8 @@ namespace ConsoleTest
         string host;
         //Клавиши
         string[] keys;
+        //Процесс презентации
+        Process presentationProcess;
 
         //КОМАНДЫ
 
@@ -42,19 +46,25 @@ namespace ConsoleTest
         // Закрытие программы
         const string codeClose = "-5";
 
-        public async void Connection(string savePath, int slidesCount, int bufferLength, int codeBufferLength, string[] keys)
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+
+        public async void Connection(string savePath, int slidesCount, int imageBufferLength, int codeBufferLength, string[] keys, Process process)
         {
             Configure(); 
             SetSocket();
-            int sentSlidesCount = await AsyncSendImages(savePath, slidesCount, bufferLength);
+            int sentSlidesCount = await AsyncSendImages(savePath, slidesCount, imageBufferLength);
             this.keys = keys;
+            presentationProcess = process;
             ListenPort(codeBufferLength);
         }
 
         public void Configure()
         {
             host = Dns.GetHostName(); // получение имени компьютера
-            string ip = Dns.GetHostEntry(host).AddressList[4].ToString(); // получение IP-адреса // 1 для дома, 3 для универа
+            string ip = Dns.GetHostEntry(host).AddressList[1].ToString(); // получение IP-адреса // 1 для дома, 3 для универа
             ipAddress = IPAddress.Parse(ip); //присваиваем IP-адрес
             Console.WriteLine(ip);
 
@@ -74,22 +84,20 @@ namespace ConsoleTest
 
         public Task<int> AsyncSendImages(string savePath, int slidesCount, int bufferLength)
         {
-            return Task.Run(() => SendImages(savePath, slidesCount, bufferLength));
-        }
-
-        public int SendImages(string savePath, int slidesCount, int bufferLength) //отправка картинок презентации
-        {
-            handler.Send(BitConverter.GetBytes(slidesCount)); //отправляем количество слайдов
-
-            int i; // количество отправленных слайдов
-
-            for (i = 1; i <= slidesCount; i++)
+            return Task.Run(() =>
             {
-                byte[] byteImage = ImageToByteArray(getImage(savePath, i)); //берем изображение и переводим в массив байт
-                SendImages(byteImage, bufferLength); //отправка изображения
-                Console.WriteLine(i);
-            }
-            return i;
+                handler.Send(BitConverter.GetBytes(slidesCount)); //отправляем количество слайдов
+
+                int i; // количество отправленных слайдов
+
+                for (i = 1; i <= slidesCount; i++)
+                {
+                    byte[] byteImage = ImageToByteArray(getImage(savePath, i)); //берем изображение и переводим в массив байт
+                    SendImages(byteImage, bufferLength); //отправка изображения
+                    Console.WriteLine(i);
+                }
+                return i;
+            });
         }
 
         private Image getImage(string savePath, int index) //считываем изображение
@@ -151,51 +159,67 @@ namespace ConsoleTest
         
         public Task<string> AsyncParseAndSendCode(byte[] receiveBuffer)
         {
-            return Task.Run(() => ParseAndSendCode(receiveBuffer));
-        }
-        
-        public string ParseAndSendCode(byte[] receiveBuffer)
-        {
-            ParseCommand(receiveBuffer);
-            SendResponse();
-            return "0";
+            return Task.Run(() =>
+            {
+                string response;
+                if (ParseCommand(receiveBuffer))
+                    response = "0";
+                else
+                    response = "-1";
+                SendResponse(response);
+                return response;
+            });
         }
 
-        public string ParseCommand(byte[] receiveBuffer)
+        public bool ParseCommand(byte[] receiveBuffer)
         {
             string code = Encoding.Unicode.GetString(receiveBuffer);
 
             Console.WriteLine(code);
 
-            switch (code) // определяемся с командами клиента, 49 - это код символа в ASCII
+            if (isPresentationWindow()) //если сейчас активное окно - это окно презентации
             {
-                case codeNext:
-                    SendKeys.SendWait(keys[0]);
-                    break;
-                case codePrev:
-                    SendKeys.SendWait(keys[1]);
-                    break;
-                case codePlay: // запуск презентации
-                    SendKeys.SendWait(keys[2]);
-                    break;
-                case codeExit: // выход
-                    SendKeys.SendWait(keys[3]);
-                    break;
-                case codeClose: //закрытие программы
-                    break;
-                default: //переход к слайду
-                    string sendCode = code + keys[4]; //для PP
-                    //string index = code + "~"; string sendCode = keys[4] + index; // для AR
-                    SendKeys.SendWait(sendCode);
-                    break;
+                switch (code) // определяемся с командами клиента, 49 - это код символа в ASCII
+                {
+                    case codeNext:
+                        SendKeys.SendWait(keys[0]);
+                        break;
+                    case codePrev:
+                        SendKeys.SendWait(keys[1]);
+                        break;
+                    case codePlay: // запуск презентации
+                        SendKeys.SendWait(keys[2]);
+                        break;
+                    case codeExit: // выход
+                        SendKeys.SendWait(keys[3]);
+                        break;
+                    case codeClose: //закрытие программы
+                        break;
+                    default: //переход к слайду
+                        string sendCode = code + keys[4]; //для PP
+                        //string index = code + "~"; string sendCode = keys[4] + index; // для AR
+                        SendKeys.SendWait(sendCode);
+                        break;
+                }
+                return true;
             }
-            return code;
+            return false;
         }
 
-        public void SendResponse() //отправка данных (команды)
+        public bool isPresentationWindow()
         {
-            byte[] sendBuffer = Encoding.Unicode.GetBytes("0"); //буфер для отправки
+            int currentProcessId;
+            IntPtr handle = GetForegroundWindow(); // получаем хендел активного окна
+            GetWindowThreadProcessId(handle, out currentProcessId); //получаем currentProcessId потока активного окна
+            if (currentProcessId == presentationProcess.Id)
+                return true;
+            else
+                return false;
+        }
 
+        public void SendResponse(string response) //отправка данных (команды)
+        {
+            byte[] sendBuffer = Encoding.Unicode.GetBytes(response); //буфер для отправки
             handler.Send(sendBuffer); //отправка данных
         }
     }

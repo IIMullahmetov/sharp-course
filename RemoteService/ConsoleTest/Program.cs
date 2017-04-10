@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-//ОПРЕДЕЛИТЬ ОПТИМАЛЬНОЕ КОЛИЧЕСТВО ТОЧЕК НА ДЮЙМ У ИЗОБРАЖЕНИЯ --- ПОКА ОСТАВИЛ НА 96 DPI
 //OpenDocumentPresentation читается PowerPoint'ом с 2007 SP2 версии!
 
 namespace ConsoleTest
@@ -17,21 +16,25 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
+            int imageBufferLength = 1024;
+            int codeBufferLength = 4;
+
             string savePath = "C:\\RemoteService\\Pictures\\";
-            string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)" };
+            //string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)" };
+
             
-            string pathpp = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 8.pptx";
-            PowerPointProgram presenter = new PowerPointProgram(pathpp, savePath, 96);
+            string filePath = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 8.pptx";
+            Presenter presenter = new PowerPointProgram(filePath, savePath, 96);
             
             /*
-            string pathar = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 16.pdf";
-            AdobeReaderProgram presenter = new AdobeReaderProgram(pathar, savePath, 96);
+            string filePath = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 16.pdf";
+            Presenter presenter = new AdobeReaderProgram(filePath, savePath, 96);
             */
+
             ServerConnection cc = new ServerConnection();
-            cc.Connection(savePath, presenter.getSlidesCount(), 1024, 4, presenter.getKeys());
+            cc.Connection(savePath, presenter.getSlidesCount(), imageBufferLength, codeBufferLength, presenter.getKeys(), presenter.getProcess());
             
             //cc.Connection(savePath, 72, 1024, 4, keys);
-
 
             Console.ReadLine();
         }
