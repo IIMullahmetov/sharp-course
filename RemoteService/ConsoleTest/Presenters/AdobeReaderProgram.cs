@@ -23,15 +23,12 @@ namespace ConsoleTest.Presenters
 
         public override void Rendering(string filePath, string savePath, int dpi)
         {
+            base.Rendering(filePath, savePath, dpi);
+
             Doc theDoc = new Doc();
             theDoc.Read(filePath);
             theDoc.Rendering.DotsPerInch = dpi;
             count = theDoc.PageCount;
-
-            if (!Directory.Exists(savePath))
-            {
-                Directory.CreateDirectory(savePath);
-            }
 
             for (int i = 1; i <= theDoc.PageCount; i++)
             {

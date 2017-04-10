@@ -31,6 +31,8 @@ namespace ConsoleTest.Presenters
 
         public override void Rendering(string filePath, string savePath, int dpi)
         {
+            base.Rendering(filePath, savePath, dpi);
+
             try
             {
                 oPowerPoint = new PowerPoint.Application(); //запускаем приложение
@@ -39,10 +41,6 @@ namespace ConsoleTest.Presenters
                 oSlides = oPre.Slides; //считываем слайды
                 count = oPre.Slides.Count;
 
-                if (!Directory.Exists(savePath))
-                {
-                    Directory.CreateDirectory(savePath);
-                }
 
                 int width = dpi * 10;
                 int height = Convert.ToInt32(dpi * 7.5);

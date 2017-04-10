@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,13 @@ namespace ConsoleTest.Presenters
             process = Process.Start(startInfo);
         }
 
-        public abstract void Rendering(string path, string savePath, int dpi);
+        public virtual void Rendering(string path, string savePath, int dpi)
+        {
+            if (!Directory.Exists(savePath))
+            {
+                Directory.CreateDirectory(savePath);
+            }
+        }
 
         public int getSlidesCount()
         {
