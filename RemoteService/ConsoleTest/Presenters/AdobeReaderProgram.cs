@@ -11,12 +11,13 @@ namespace ConsoleTest.Presenters
 {
     class AdobeReaderProgram : Presenter
     {
-        string processName = "AcroRd32.exe";
+        string processName = "AcroRd32";
 
-        string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)" };
+        new string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)" };
 
         public AdobeReaderProgram(string filePath, string savePath, int dpi)
         {
+            base.keys = keys;
             Launch(processName, filePath);
             Rendering(filePath, savePath, dpi);
         }
@@ -37,11 +38,6 @@ namespace ConsoleTest.Presenters
                 theDoc.Rendering.Save(savePath + i.ToString() + ".jpg");
             }
             theDoc.Clear();
-        }
-
-        public override string[] getKeys()
-        {
-            return keys;
         }
 
         public override Process getProcess()

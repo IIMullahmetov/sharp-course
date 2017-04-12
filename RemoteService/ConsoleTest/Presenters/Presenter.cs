@@ -14,13 +14,14 @@ namespace ConsoleTest.Presenters
     {
         protected Process process;
         protected int count;
+        protected string[] keys;
 
         public void Launch(string processName, string filePath)
         {
             string quotes = "\"";
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = processName;
+            startInfo.FileName = processName + ".exe";
             startInfo.Arguments = "/o " + quotes + filePath + quotes;
             startInfo.WindowStyle = ProcessWindowStyle.Maximized;
 
@@ -40,7 +41,10 @@ namespace ConsoleTest.Presenters
             return count;
         }
 
-        public abstract string[] getKeys();
+        public string[] getKeys()
+        {
+            return keys;
+        }
 
         public abstract Process getProcess();
     }

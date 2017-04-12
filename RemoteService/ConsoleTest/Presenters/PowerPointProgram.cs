@@ -19,12 +19,13 @@ namespace ConsoleTest.Presenters
         PowerPoint.Presentation oPre = null;
         PowerPoint.Slides oSlides = null;
 
-        string processName = "POWERPNT.exe";
+        string processName = "POWERPNT";
 
-        string[] keys = { "{RIGHT}", "{LEFT}", "{F5}", "{ESC}", "~"};
+        new string[] keys = { "{RIGHT}", "{LEFT}", "{F5}", "{ESC}", "~" };
 
         public PowerPointProgram(string filePath, string savePath, int dpi)
         {
+            base.keys = keys;
             Launch(processName, filePath);
             Rendering(filePath, savePath, dpi);
         }
@@ -87,14 +88,17 @@ namespace ConsoleTest.Presenters
             }
         }
 
-        public override string[] getKeys()
-        {
-            return keys;
-        }
-
         public override Process getProcess()
         {
-            return process;
+            if (!process.HasExited)
+                return process;
+            else
+                foreach (var p in Process.GetProcesses())
+                {
+                    if (p.ProcessName == processName)
+                        return p;
+                }
+                return null;
         }
     }
 }

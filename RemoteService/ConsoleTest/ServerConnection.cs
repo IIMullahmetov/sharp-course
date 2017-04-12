@@ -64,7 +64,7 @@ namespace ConsoleTest
         public void Configure()
         {
             host = Dns.GetHostName(); // получение имени компьютера
-            string ip = Dns.GetHostEntry(host).AddressList[1].ToString(); // получение IP-адреса // 1 для дома, 3 для универа
+            string ip = Dns.GetHostEntry(host).AddressList[4].ToString(); // получение IP-адреса // 1 для дома, 3 для универа
             ipAddress = IPAddress.Parse(ip); //присваиваем IP-адрес
             Console.WriteLine(ip);
 
