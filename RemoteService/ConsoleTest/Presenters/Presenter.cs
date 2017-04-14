@@ -15,6 +15,8 @@ namespace ConsoleTest.Presenters
         protected Process process;
         protected int count;
         protected string[] keys;
+        protected string savePath;
+        protected string format;
 
         public void Launch(string processName, string filePath)
         {
@@ -28,24 +30,32 @@ namespace ConsoleTest.Presenters
             process = Process.Start(startInfo);
         }
 
-        public virtual void Rendering(string path, string savePath, int dpi)
+        public void CreateDirectory(string savePath)
         {
+            this.savePath = savePath;
+
             if (!Directory.Exists(savePath))
             {
                 Directory.CreateDirectory(savePath);
             }
         }
 
-        public int getSlidesCount()
-        {
-            return count;
-        }
+        public abstract void Configure(string filePath, int dpi);
 
-        public string[] getKeys()
-        {
-            return keys;
-        }
+        public abstract void SavePageRendering(int index);
 
-        public abstract Process getProcess();
+        public string GetSavePath() { return savePath; }
+
+        public int GetSlidesCount() { return count; }
+
+        public string GetKey(int index) { return keys[index]; }
+
+        public abstract string GetCommandGoPage(string code);
+
+        public string GetFormat() { return format; }
+
+        public abstract Process GetProcess();
+
+        public abstract void Clear();
     }
 }

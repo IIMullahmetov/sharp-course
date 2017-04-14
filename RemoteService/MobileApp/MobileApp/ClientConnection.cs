@@ -26,6 +26,8 @@ namespace MobileApp
         int imageBufferLength;
         //Размер буфера для кода
         int codeBufferLength;
+        //Событие принятия команды
+        //AutoResetEvent commandEvent;
 
         public ClientConnection(int imageBufferLength, int codeBufferLength)
         {
@@ -37,20 +39,18 @@ namespace MobileApp
         {
             return Task.Run(() =>
             {
-                SetIPAddress((string)message);
-                Configure();
+                Configure((string)message);
+                //commandEvent = new AutoResetEvent(true);
                 return GetReceiveImages(codeBufferLength, imageBufferLength);
             });
         }
 
-        public void SetIPAddress(string IP)
+        public void Configure(string IP)
         {
-            ipAddress = IPAddress.Parse("192.168.0.5"); //присваиваем IP-адрес
+            ipAddress = IPAddress.Parse("192.168.0.8"); //присваиваем IP-адрес
+            
             //ipAddress = IPAddress.Parse(IP); //присваиваем IP-адрес
-        }
 
-        public void Configure()
-        {
             ipEndPoint = new IPEndPoint(ipAddress, port); // создаем локальную конечную точку
 
             socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // создаем основной сокет
@@ -70,7 +70,9 @@ namespace MobileApp
 
             for (int i = 1; i <= countBytes; i++)
             {
+                //commandEvent.WaitOne();
                 images.Add(ByteArrayToImage(ReceiveImages(metaBufferLength, bufferLength)));
+                //commandEvent.Set();
             }
             return images;
         }
@@ -82,6 +84,8 @@ namespace MobileApp
             socket.Receive(receiveMetaBuffer); //записываем метаданные
 
             int countBytes = BitConverter.ToInt32(receiveMetaBuffer, 0); //узнаем количество байт, которые нам придут
+
+            //Console.WriteLine(Encoding.Unicode.GetString(receiveMetaBuffer));
 
             Console.WriteLine("countBytes - " + countBytes);
 
@@ -115,7 +119,11 @@ namespace MobileApp
             return Task.Run(() =>
             {
                 SendCode(message);
-                return ReceiveCode();
+                //commandEvent.WaitOne();
+                int code = ReceiveCode();
+                Console.WriteLine("ClientTask - " + code);
+                //commandEvent.Set();
+                return code;
             });
         }
 
@@ -125,8 +133,6 @@ namespace MobileApp
 
             socket.Send(sendBuffer);
         }
-
-        //!!! Лучше чтобы размер приходил "сверху"
 
         public int ReceiveCode()
         {

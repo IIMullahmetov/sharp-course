@@ -11,36 +11,42 @@ namespace ConsoleTest.Presenters
 {
     class AdobeReaderProgram : Presenter
     {
+        Doc theDoc;
+
         string processName = "AcroRd32";
 
-        new string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)" };
+        new string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)", "~" };
 
-        public AdobeReaderProgram(string filePath, string savePath, int dpi)
+        public AdobeReaderProgram(string filePath, string savePath, string format, int dpi)
         {
             base.keys = keys;
+            base.format = format;
             Launch(processName, filePath);
-            Rendering(filePath, savePath, dpi);
+            CreateDirectory(savePath);
+            Configure(filePath, dpi);
         }
 
-        public override void Rendering(string filePath, string savePath, int dpi)
+        public override void Configure(string filePath, int dpi)
         {
-            base.Rendering(filePath, savePath, dpi);
-
-            Doc theDoc = new Doc();
+            theDoc = new Doc();
             theDoc.Read(filePath);
             theDoc.Rendering.DotsPerInch = dpi;
             count = theDoc.PageCount;
-
-            for (int i = 1; i <= theDoc.PageCount; i++)
-            {
-                theDoc.PageNumber = i;
-                theDoc.Rect.String = theDoc.CropBox.String;
-                theDoc.Rendering.Save(savePath + i.ToString() + ".jpg");
-            }
-            theDoc.Clear();
         }
 
-        public override Process getProcess()
+        public override void SavePageRendering(int index)
+        {
+            theDoc.PageNumber = index;
+            theDoc.Rect.String = theDoc.CropBox.String;
+            theDoc.Rendering.Save(savePath + index.ToString() + format);
+        }
+
+        public override string GetCommandGoPage(string code)
+        {
+            return GetKey(4) + code + GetKey(5);
+        }
+
+        public override Process GetProcess()
         {
             foreach (var p in Process.GetProcesses())
             {
@@ -49,5 +55,7 @@ namespace ConsoleTest.Presenters
             }
             return null;
         }
+
+        public override void Clear() { theDoc.Clear(); }
     }
 }

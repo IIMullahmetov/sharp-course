@@ -23,48 +23,54 @@ namespace ConsoleTest.Presenters
 
         new string[] keys = { "{RIGHT}", "{LEFT}", "{F5}", "{ESC}", "~" };
 
-        public PowerPointProgram(string filePath, string savePath, int dpi)
+        private int width;
+        private int height;
+
+        public PowerPointProgram(string filePath, string savePath, string format, int dpi)
         {
             base.keys = keys;
+            base.format = format;
             Launch(processName, filePath);
-            Rendering(filePath, savePath, dpi);
+            CreateDirectory(savePath);
+            Configure(filePath, dpi);
         }
 
-        public override void Rendering(string filePath, string savePath, int dpi)
+        public override void Configure(string filePath, int dpi)
         {
-            base.Rendering(filePath, savePath, dpi);
+            width = dpi * 10;
+            height = Convert.ToInt32(dpi * 7.5);
 
-            try
-            {
-                oPowerPoint = new PowerPoint.Application(); //запускаем приложение
-                oPres = oPowerPoint.Presentations; //презентации
-                oPre = oPres.Open(filePath, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse); //открываем презентацию
-                oSlides = oPre.Slides; //считываем слайды
-                count = oPre.Slides.Count;
-
-
-                int width = dpi * 10;
-                int height = Convert.ToInt32(dpi * 7.5);
-
-                foreach (PowerPoint.Slide slide in oSlides)
-                {
-                    string p = slide.SlideIndex + ".jpg";
-                    slide.Export(savePath + p, "JPG", width, height);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                //oPre.Close(); //закрываем презентацию
-                //oPowerPoint.Quit(); //выходим из программы
-                Clean(); //чистим ресурсы
-            }
+            oPowerPoint = new PowerPoint.Application(); //запускаем приложение
+            oPres = oPowerPoint.Presentations; //презентации
+            oPre = oPres.Open(filePath, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse); //открываем презентацию
+            oSlides = oPre.Slides; //считываем слайды
+            count = oPre.Slides.Count;
         }
 
-        public void Clean()
+        public override void SavePageRendering(int index)
+        {
+            oPre.Slides[index].Export(savePath + index + format, format.Substring(1, format.Length - 1), width, height);
+        }
+
+        public override string GetCommandGoPage(string code)
+        {
+            return code + GetKey(4);
+        }
+
+        public override Process GetProcess()
+        {
+            if (!process.HasExited)
+                return process;
+            else
+                foreach (var p in Process.GetProcesses())
+                {
+                    if (p.ProcessName == processName)
+                        return p;
+                }
+            return null;
+        }
+
+        public override void Clear()
         {
             if (oSlides != null)
             {
@@ -86,19 +92,6 @@ namespace ConsoleTest.Presenters
                 Marshal.FinalReleaseComObject(oPowerPoint);
                 oPowerPoint = null;
             }
-        }
-
-        public override Process getProcess()
-        {
-            if (!process.HasExited)
-                return process;
-            else
-                foreach (var p in Process.GetProcesses())
-                {
-                    if (p.ProcessName == processName)
-                        return p;
-                }
-                return null;
-        }
+        }      
     }
 }

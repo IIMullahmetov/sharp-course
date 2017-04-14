@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleTest.Presenters;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,12 +27,10 @@ namespace ConsoleTest
         IPEndPoint ipEndPoint;
         // Сокет
         Socket handler;
-        //Название компьютера
-        string host;
-        //Клавиши
-        string[] keys;
-        //Процесс презентации
-        Process presentationProcess;
+        //Объект презентации
+        Presenter presenter;
+        //Событие принятия команды
+        //AutoResetEvent commandEvent;
 
         //КОМАНДЫ
 
@@ -51,58 +50,71 @@ namespace ConsoleTest
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
-        public async void Connection(string savePath, int slidesCount, int imageBufferLength, int codeBufferLength, string[] keys, Process process)
+        internal class NewThreadObject
         {
-            Configure(); 
+            public string savePath;
+            public int slidesCount;
+            public int imageBufferLength;
+
+            public NewThreadObject(string savePath, int slidesCount, int imageBufferLength)
+            {
+                this.savePath = savePath;
+                this.slidesCount = slidesCount;
+                this.imageBufferLength = imageBufferLength;
+            }
+        }
+
+        public void Connection(Presenter presenter, int imageBufferLength, int codeBufferLength)
+        {
+            this.presenter = presenter;
+            Configure();
             SetSocket();
-            int sentSlidesCount = await AsyncSendImages(savePath, slidesCount, imageBufferLength);
-            this.keys = keys;
-            presentationProcess = process;
+            NewThreadSendImages(imageBufferLength);
             ListenPort(codeBufferLength);
         }
 
         public void Configure()
         {
-            host = Dns.GetHostName(); // получение имени компьютера
+            string host = Dns.GetHostName(); // получение имени компьютера
             string ip = Dns.GetHostEntry(host).AddressList[4].ToString(); // получение IP-адреса // 1 для дома, 3 для универа
-            ipAddress = IPAddress.Parse(ip); //присваиваем IP-адрес
-            Console.WriteLine(ip);
-
+            ipAddress = IPAddress.Parse(ip); //присваиваем IP-адрес 
             ipEndPoint = new IPEndPoint(ipAddress, port); // создаем локальную конечную точку
+
+            Console.WriteLine(ip);
         }
 
         public void SetSocket()
         {
             Socket listenSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // создаем основной сокет
-
             listenSocket.Bind(ipEndPoint); // связываем сокет с конечной точкой
-
             listenSocket.Listen(1); // переходим в режим "прослушивания"
-
             handler = listenSocket.Accept(); //получаем подключение
         }
 
-        public Task<int> AsyncSendImages(string savePath, int slidesCount, int bufferLength)
+        public void NewThreadSendImages(int imageBufferLength)
         {
-            return Task.Run(() =>
+            var data = new NewThreadObject(presenter.GetSavePath(), presenter.GetSlidesCount(), imageBufferLength);
+            ThreadPool.QueueUserWorkItem(new WaitCallback(SendImages), data);
+        }
+
+        public void SendImages(object obj)
+        {
+            var data = (NewThreadObject) obj;
+            handler.Send(BitConverter.GetBytes(data.slidesCount)); //отправляем количество слайдов
+            for (int i = 1; i <= data.slidesCount; i++)
             {
-                handler.Send(BitConverter.GetBytes(slidesCount)); //отправляем количество слайдов
+                Console.WriteLine(i);
 
-                int i; // количество отправленных слайдов
-
-                for (i = 1; i <= slidesCount; i++)
-                {
-                    byte[] byteImage = ImageToByteArray(getImage(savePath, i)); //берем изображение и переводим в массив байт
-                    SendImages(byteImage, bufferLength); //отправка изображения
-                    Console.WriteLine(i);
-                }
-                return i;
-            });
+                presenter.SavePageRendering(i);
+                byte[] byteImage = ImageToByteArray(getImage(data.savePath, i)); //берем изображение и переводим в массив байт
+                SendImages(byteImage, data.imageBufferLength); //отправка изображения
+            }
+            presenter.Clear();
         }
 
         private Image getImage(string savePath, int index) //считываем изображение
         {
-            return Image.FromFile(savePath + index + ".jpg");
+            return Image.FromFile(savePath + index + presenter.GetFormat());
         }
 
         private byte[] ImageToByteArray(Image img) //конвертируем картинку в массив байт
@@ -114,22 +126,15 @@ namespace ConsoleTest
         public void SendImages(byte[] byteData, int bufferLength) //отправка данных (изображения)
         {
             Console.WriteLine("Размер - " + byteData.Length);
-
             int meta = handler.Send(BitConverter.GetBytes(byteData.Length)); //отправляем метаданные
-
             int sendBytes = 0; //общее количество отданных байт и рулетка в одном лице
-
             while (sendBytes < byteData.Length)
             {
                 byte[] sendBuffer = new byte[byteData.Length - sendBytes >= bufferLength ? bufferLength : byteData.Length - sendBytes]; //буфер для отправки
-
                 Array.Copy(byteData, sendBytes, sendBuffer, 0, sendBuffer.Length); //сохраняем в буфер часть картинки
-
                 sendBytes += sendBuffer.Length; //сдвигаем индекс
-
                 handler.Send(sendBuffer); //отправка данных
             }
-
             Console.WriteLine("Отправлено - " + sendBytes);
         }
 
@@ -140,10 +145,8 @@ namespace ConsoleTest
                 while (true)
                 {
                     byte[] receiveBuffer = new byte[bufferLength];
-
                     handler.Receive(receiveBuffer);
-
-                    string result = await AsyncParseAndSendCode(receiveBuffer);
+                    await AsyncParseAndSendCode(receiveBuffer);
                 }
             }
             catch (Exception e)
@@ -162,10 +165,11 @@ namespace ConsoleTest
             return Task.Run(() =>
             {
                 string response;
-                if (ParseCommand(receiveBuffer))
-                    response = "0";
-                else
-                    response = "-1";
+                Console.WriteLine("\nServerTask - " + Encoding.Unicode.GetString(receiveBuffer) + "\n");
+                    if (ParseCommand(receiveBuffer))
+                        response = "0";
+                    else
+                        response = "-1";
                 SendResponse(response);
                 return response;
             });
@@ -174,33 +178,30 @@ namespace ConsoleTest
         public bool ParseCommand(byte[] receiveBuffer)
         {
             string code = Encoding.Unicode.GetString(receiveBuffer);
-
-            Console.WriteLine(code);
-
             if (isPresentationWindow()) //если сейчас активное окно - это окно презентации
             {
+                string command = "";
                 switch (code) // определяемся с командами клиента, 49 - это код символа в ASCII
                 {
                     case codeNext:
-                        SendKeys.SendWait(keys[0]);
+                        command = presenter.GetKey(0);
                         break;
                     case codePrev:
-                        SendKeys.SendWait(keys[1]);
+                        command = presenter.GetKey(1);
                         break;
                     case codePlay: // запуск презентации
-                        SendKeys.SendWait(keys[2]);
+                        command = presenter.GetKey(2);
                         break;
                     case codeExit: // выход
-                        SendKeys.SendWait(keys[3]);
+                        command = presenter.GetKey(3);
                         break;
                     case codeClose: //закрытие программы
                         break;
                     default: //переход к слайду
-                        string sendCode = code + keys[4]; //для PP
-                        //string index = code + "~"; string sendCode = keys[4] + index; // для AR
-                        SendKeys.SendWait(sendCode);
+                        command = presenter.GetCommandGoPage(code);
                         break;
                 }
+                SendKeys.SendWait(command);
                 return true;
             }
             return false;
@@ -211,7 +212,7 @@ namespace ConsoleTest
             int currentProcessId;
             IntPtr handle = GetForegroundWindow(); // получаем хендел активного окна
             GetWindowThreadProcessId(handle, out currentProcessId); //получаем currentProcessId потока активного окна
-            if (currentProcessId == presentationProcess.Id)
+            if (currentProcessId == presenter.GetProcess().Id)
                 return true;
             else
                 return false;

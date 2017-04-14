@@ -24,15 +24,15 @@ namespace ConsoleTest
 
             
             string filePath = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 8.pptx";
-            Presenter presenter = new PowerPointProgram(filePath, savePath, 96);
+            Presenter presenter = new PowerPointProgram(filePath, savePath, ".jpg", 96);
             
             /*
             string filePath = "C:\\Users\\" + Environment.UserName + "\\GoogleDrive\\Учеба\\Информатика\\Лекция 16.pdf";
-            Presenter presenter = new AdobeReaderProgram(filePath, savePath, 96);
+            Presenter presenter = new AdobeReaderProgram(filePath, savePath, ".jpg", 96);
             */
 
             ServerConnection cc = new ServerConnection();
-            cc.Connection(savePath, presenter.getSlidesCount(), imageBufferLength, codeBufferLength, presenter.getKeys(), presenter.getProcess());
+            cc.Connection(presenter, imageBufferLength, codeBufferLength);
             
             //cc.Connection(savePath, 72, 1024, 4, keys);
 
