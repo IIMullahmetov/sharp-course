@@ -96,6 +96,6 @@ namespace ConsoleTest.Presenters
                 Marshal.FinalReleaseComObject(oPowerPoint);
                 oPowerPoint = null;
             }
-        }      
+        }
     }
 }

@@ -9,13 +9,13 @@ using Xamarin.Forms;
 
 namespace MobileApp
 {
-	public partial class MainPage : ContentPage
-	{
+    public partial class MainPage : ContentPage
+    {
         static ClientConnection cc;
 
         public MainPage(int imageBufferLength, int metaBufferLength)
-		{
-			InitializeComponent();
+        {
+            InitializeComponent();
             cc = new ClientConnection(imageBufferLength, metaBufferLength);
             AsyncConnection();
         }
@@ -34,7 +34,8 @@ namespace MobileApp
 
         private void OKButton_Clicked(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(IPEntry.Text)) {
+            if (!string.IsNullOrEmpty(IPEntry.Text))
+            {
                 //ThreadPool.QueueUserWorkItem(new WaitCallback(cc.Connection), IPEntry.Text);
                 AsyncConnection();
                 OKButton.BackgroundColor = Color.Red;
@@ -44,7 +45,7 @@ namespace MobileApp
                 DisplayAlert("Ошибка", "Введите IP", "ОK");
             }
         }
-           
+
         public static async void AsyncRequest(string message)
         {
             int code = await cc.Request(message);
