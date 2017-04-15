@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//ПРОДУМАТЬ МОМЕНТ: ПОЛЬЗОВАТЕЛЬ ЗАКРОЕТ ПРЕЗЕНТАЦИЮ СРАЗУ ПОСЛЕ ОТКРЫТИЯ
+//СЛЕДИТЬ ЗА ПРИЛОЖЕНИЕМ ЛУЧШЕ ЧЕРЕЗ ОБЫЧНЫЕ "ОКНА" WINDOWS
 
 namespace ConsoleTest.Presenters
 {
@@ -16,6 +16,7 @@ namespace ConsoleTest.Presenters
         protected int count;
         protected string[] keys;
         protected string savePath;
+        protected string extension;
         protected string format;
 
         public void Launch(string processName, string filePath)
@@ -52,9 +53,11 @@ namespace ConsoleTest.Presenters
 
         public abstract string GetCommandGoPage(string code);
 
-        public string GetFormat() { return format; }
+        public string GetExtension() { return extension; }
 
-        public abstract Process GetProcess();
+        public abstract void SetProcess();
+
+        public Process GetProcess() { return process; }
 
         public abstract void Clear();
     }

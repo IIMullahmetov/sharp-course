@@ -26,13 +26,15 @@ namespace ConsoleTest.Presenters
         private int width;
         private int height;
 
-        public PowerPointProgram(string filePath, string savePath, string format, int dpi)
+        public PowerPointProgram(string filePath, string savePath, string extension, int dpi)
         {
             base.keys = keys;
-            base.format = format;
+            base.extension = extension;
+            format = extension.Substring(1, extension.Length - 1);
             Launch(processName, filePath);
             CreateDirectory(savePath);
             Configure(filePath, dpi);
+            SetProcess();
         }
 
         public override void Configure(string filePath, int dpi)
@@ -49,7 +51,7 @@ namespace ConsoleTest.Presenters
 
         public override void SavePageRendering(int index)
         {
-            oPre.Slides[index].Export(savePath + index + format, format.Substring(1, format.Length - 1), width, height);
+            oPre.Slides[index].Export(savePath + index + extension, format, width, height);
         }
 
         public override string GetCommandGoPage(string code)
@@ -57,17 +59,19 @@ namespace ConsoleTest.Presenters
             return code + GetKey(4);
         }
 
-        public override Process GetProcess()
+        public override void SetProcess()
         {
-            if (!process.HasExited)
-                return process;
-            else
+            if (process.HasExited)
+            {
                 foreach (var p in Process.GetProcesses())
                 {
                     if (p.ProcessName == processName)
-                        return p;
+                    {
+                        process = p;
+                        break;
+                    }
                 }
-            return null;
+            }
         }
 
         public override void Clear()

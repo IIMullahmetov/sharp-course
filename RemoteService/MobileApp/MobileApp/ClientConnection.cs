@@ -47,7 +47,7 @@ namespace MobileApp
 
         public void Configure(string IP)
         {
-            ipAddress = IPAddress.Parse("192.168.0.8"); //присваиваем IP-адрес
+            ipAddress = IPAddress.Parse("192.168.0.2"); //присваиваем IP-адрес
             
             //ipAddress = IPAddress.Parse(IP); //присваиваем IP-адрес
 

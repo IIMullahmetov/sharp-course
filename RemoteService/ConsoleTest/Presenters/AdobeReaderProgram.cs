@@ -17,13 +17,14 @@ namespace ConsoleTest.Presenters
 
         new string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)", "~" };
 
-        public AdobeReaderProgram(string filePath, string savePath, string format, int dpi)
+        public AdobeReaderProgram(string filePath, string savePath, string extension, int dpi)
         {
             base.keys = keys;
-            base.format = format;
+            base.extension = extension;
             Launch(processName, filePath);
             CreateDirectory(savePath);
             Configure(filePath, dpi);
+            SetProcess();
         }
 
         public override void Configure(string filePath, int dpi)
@@ -38,7 +39,7 @@ namespace ConsoleTest.Presenters
         {
             theDoc.PageNumber = index;
             theDoc.Rect.String = theDoc.CropBox.String;
-            theDoc.Rendering.Save(savePath + index.ToString() + format);
+            theDoc.Rendering.Save(savePath + index.ToString() + extension);
         }
 
         public override string GetCommandGoPage(string code)
@@ -46,14 +47,16 @@ namespace ConsoleTest.Presenters
             return GetKey(4) + code + GetKey(5);
         }
 
-        public override Process GetProcess()
+        public override void SetProcess()
         {
             foreach (var p in Process.GetProcesses())
             {
                 if (p.ProcessName == process.ProcessName && p.Id != process.Id)
-                    return p;
+                {
+                    process = p;
+                    break;
+                }
             }
-            return null;
         }
 
         public override void Clear() { theDoc.Clear(); }

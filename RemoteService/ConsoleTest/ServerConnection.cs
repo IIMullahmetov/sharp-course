@@ -114,7 +114,7 @@ namespace ConsoleTest
 
         private Image getImage(string savePath, int index) //считываем изображение
         {
-            return Image.FromFile(savePath + index + presenter.GetFormat());
+            return Image.FromFile(savePath + index + presenter.GetExtension());
         }
 
         private byte[] ImageToByteArray(Image img) //конвертируем картинку в массив байт
@@ -180,7 +180,7 @@ namespace ConsoleTest
             string code = Encoding.Unicode.GetString(receiveBuffer);
             if (isPresentationWindow()) //если сейчас активное окно - это окно презентации
             {
-                string command = "";
+                string command = null;
                 switch (code) // определяемся с командами клиента, 49 - это код символа в ASCII
                 {
                     case codeNext:
