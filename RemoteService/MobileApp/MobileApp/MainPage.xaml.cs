@@ -13,10 +13,10 @@ namespace MobileApp
 	{
         static ClientConnection cc;
 
-        public MainPage(int imageBufferLength, int codeBufferLength)
+        public MainPage(int imageBufferLength, int metaBufferLength)
 		{
 			InitializeComponent();
-            cc = new ClientConnection(imageBufferLength, codeBufferLength);
+            cc = new ClientConnection(imageBufferLength, metaBufferLength);
             AsyncConnection();
         }
 

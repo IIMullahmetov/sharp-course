@@ -63,35 +63,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="KeySend.cs" />
+    <Compile Include="ServerImageConverter.cs" />
+    <Compile Include="ImagesData.cs" />
     <Compile Include="Presenters\AdobeReaderProgram.cs" />
     <Compile Include="Presenters\PowerPointProgram.cs" />
     <Compile Include="Presenters\Presenter.cs" />
     <Compile Include="ServerConnection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WindowObserver.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ABCpdf.chm" />
+    <None Include="Library\ABCpdf.chm" />
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="3DGlue10-32.dll">
+    <Content Include="Library\3DGlue10-32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="3DGlue10-64.dll">
+    <Content Include="Library\3DGlue10-64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ABCpdf10-32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ABCpdf10-64.dll">
+    <Content Include="Library\ABCpdf10-64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="PrintHook32.dll">
+    <Content Include="Library\PrintHook32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="PrintHook64.dll">
+    <Content Include="Library\PrintHook64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
