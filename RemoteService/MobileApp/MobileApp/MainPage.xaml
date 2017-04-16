@@ -20,7 +20,10 @@
             <Button x:Name="PlayButton" Text="Play" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
                 BackgroundColor="Blue" TextColor="White"
                Clicked="PlayClicked"/>
-            <Button x:Name="ExitButton" Text="X" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
+            <Button x:Name="StopButton" Text="Stop" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
+               BackgroundColor="Blue" TextColor="White"
+               Clicked="StopClicked"/>
+            <Button x:Name="ExitButton" Text="Exit" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center"
                BackgroundColor="Blue" TextColor="White"
                Clicked="ExitClicked"/>
         </StackLayout>

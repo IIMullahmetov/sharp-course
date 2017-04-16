@@ -30,6 +30,7 @@ namespace ConsoleTest.Presenters
         {
             base.keys = keys;
             base.extension = extension;
+            presentationName = Path.GetFileNameWithoutExtension(filePath);
             format = extension.Substring(1, extension.Length - 1);
             Launch(processName, filePath);
             CreateDirectory(savePath);

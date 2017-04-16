@@ -51,13 +51,13 @@ namespace ConsoleTest
         public void NewThreadSendImages(int imageBufferLength)
         {
             var data = new ImagesData(presenter.GetSavePath(), presenter.GetSlidesCount(), imageBufferLength);
-            ThreadPool.QueueUserWorkItem(new WaitCallback(SendImages), data);
+            ThreadPool.QueueUserWorkItem(new WaitCallback(SendData), data);
         }
 
-        public void SendImages(object obj)
+        public void SendData(object obj)
         {
             var data = (ImagesData)obj;
-            handler.Send(BitConverter.GetBytes(data.slidesCount)); //отправляем количество слайдов
+            SendPresentationData(data.slidesCount); //отправляем сведения о презентации
             for (int i = 1; i <= data.slidesCount; i++)
             {
                 Console.WriteLine(i);
@@ -67,6 +67,13 @@ namespace ConsoleTest
                 SendImage(byteImage, data.imageBufferLength); //отправка изображения
             }
             presenter.Clear();
+        }
+
+        public void SendPresentationData(int slidesCount)
+        {
+            handler.Send(BitConverter.GetBytes(presenter.GetPresentationName().Length)); //отправляем метаданные
+            handler.Send(Encoding.Unicode.GetBytes(presenter.GetPresentationName())); //отправляем название презентации
+            handler.Send(BitConverter.GetBytes(slidesCount)); //отправляем количество слайдов
         }
 
         public void SendImage(byte[] byteData, int bufferLength) //отправка данных (изображения)

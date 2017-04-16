@@ -21,6 +21,7 @@ namespace ConsoleTest.Presenters
         {
             base.keys = keys;
             base.extension = extension;
+            presentationName = Path.GetFileNameWithoutExtension(filePath);
             Launch(processName, filePath);
             CreateDirectory(savePath);
             Configure(filePath, dpi);

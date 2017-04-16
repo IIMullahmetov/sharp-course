@@ -70,9 +70,15 @@ namespace MobileApp
             PlayButton.BackgroundColor = Color.Red;
         }
 
-        private void ExitClicked(object sender, EventArgs e)
+        private void StopClicked(object sender, EventArgs e)
         {
             AsyncRequest("-4");
+            ExitButton.BackgroundColor = Color.Red;
+        }
+
+        private void ExitClicked(object sender, EventArgs e)
+        {
+            AsyncRequest("-5");
             ExitButton.BackgroundColor = Color.Red;
         }
 

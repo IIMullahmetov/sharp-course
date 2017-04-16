@@ -16,6 +16,7 @@ namespace ConsoleTest.Presenters
         protected int count;
         protected string[] keys;
         protected string savePath;
+        protected string presentationName;
         protected string extension;
         protected string format;
 
@@ -46,6 +47,8 @@ namespace ConsoleTest.Presenters
         public abstract void SavePageRendering(int index);
 
         public string GetSavePath() { return savePath; }
+
+        public string GetPresentationName() { return presentationName; }
 
         public int GetSlidesCount() { return count; }
 

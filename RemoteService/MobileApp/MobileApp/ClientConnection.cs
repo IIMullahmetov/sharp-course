@@ -46,6 +46,8 @@ namespace MobileApp
             {
                 Configure((string)message);
                 commandEvent = new ManualResetEvent(false);
+                string presentationName = GetPresentationName();
+                Console.WriteLine(presentationName);
                 int slidesCount = GetSlidesCount();
                 int i = 1;
                 while (i <= slidesCount)
@@ -54,7 +56,6 @@ namespace MobileApp
                         i++;
                 }
                 uploadingImages = false;
-                commandEvent.Set();
                 return images;
             });
         }
@@ -66,6 +67,16 @@ namespace MobileApp
             ipEndPoint = new IPEndPoint(ipAddress, port); // создаем локальную конечную точку
             socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // создаем основной сокет
             socket.Connect(ipEndPoint);
+        }
+
+        public string GetPresentationName()
+        {
+            byte[] receiveBuffer = new byte[metaBufferLength]; //буфер для метаданных
+            socket.Receive(receiveBuffer); //принимаем метаданные
+            int nameLength = BitConverter.ToInt32(receiveBuffer , 0) * 2; //переводим в число
+            Array.Resize(ref receiveBuffer, nameLength);
+            socket.Receive(receiveBuffer); //принимаем название
+            return Encoding.Unicode.GetString(receiveBuffer);
         }
 
         public int GetSlidesCount()
