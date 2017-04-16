@@ -7,18 +7,22 @@ using System.Text;
 using System.Threading.Tasks;
 
 //СЛЕДИТЬ ЗА ПРИЛОЖЕНИЕМ ЛУЧШЕ ЧЕРЕЗ ОБЫЧНЫЕ "ОКНА" WINDOWS
+//UPDATE - ВАРИАНТ ВЫШЕ - ТЕРЯЕМ БЫСТРЫЙ ОТЗЫВЧИВОСТЬ
 
 namespace ConsoleTest.Presenters
 {
     abstract class Presenter
     {
         protected Process process;
+        protected int processId;
         protected int count;
         protected string[] keys;
         protected string savePath;
         protected string presentationName;
         protected string extension;
         protected string format;
+        protected string programName;
+        protected string presentationWindowName;
 
         public void Launch(string processName, string filePath)
         {
@@ -58,9 +62,13 @@ namespace ConsoleTest.Presenters
 
         public string GetExtension() { return extension; }
 
+        public string GetProgramName() { return programName; }
+
+        public string GetPresentationWindowName() { return presentationWindowName; }
+
         public abstract void SetProcess();
 
-        public Process GetProcess() { return process; }
+        public int GetProcessId() { return processId; }
 
         public abstract void Clear();
     }

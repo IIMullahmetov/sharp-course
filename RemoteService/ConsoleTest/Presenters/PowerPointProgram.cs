@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 using Office = Microsoft.Office.Core;
 using PowerPoint = Microsoft.Office.Interop.PowerPoint;
@@ -20,7 +16,8 @@ namespace ConsoleTest.Presenters
         PowerPoint.Slides oSlides = null;
 
         string processName = "POWERPNT";
-
+        new string programName = "PowerPoint";
+        new string presentationWindowName = "Демонстрация PowerPoint";
         new string[] keys = { "{RIGHT}", "{LEFT}", "{F5}", "{ESC}", "~" };
 
         private int width;
@@ -30,12 +27,13 @@ namespace ConsoleTest.Presenters
         {
             base.keys = keys;
             base.extension = extension;
+            base.programName = programName;
+            base.presentationWindowName = presentationWindowName;
             presentationName = Path.GetFileNameWithoutExtension(filePath);
             format = extension.Substring(1, extension.Length - 1);
             Launch(processName, filePath);
             CreateDirectory(savePath);
             Configure(filePath, dpi);
-            SetProcess();
         }
 
         public override void Configure(string filePath, int dpi)
@@ -62,15 +60,13 @@ namespace ConsoleTest.Presenters
 
         public override void SetProcess()
         {
-            if (process.HasExited)
+            foreach (var p in Process.GetProcesses())
             {
-                foreach (var p in Process.GetProcesses())
+                if (p.ProcessName == processName)
                 {
-                    if (p.ProcessName == processName)
-                    {
-                        process = p;
-                        break;
-                    }
+                    //process = p;
+                    processId = p.Id;
+                    break;
                 }
             }
         }

@@ -73,7 +73,7 @@ namespace MobileApp
         private void StopClicked(object sender, EventArgs e)
         {
             AsyncRequest("-4");
-            ExitButton.BackgroundColor = Color.Red;
+            StopButton.BackgroundColor = Color.Red;
         }
 
         private void ExitClicked(object sender, EventArgs e)

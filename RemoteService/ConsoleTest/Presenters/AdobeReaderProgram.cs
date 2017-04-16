@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebSupergoo.ABCpdf10;
 
 namespace ConsoleTest.Presenters
@@ -14,18 +10,18 @@ namespace ConsoleTest.Presenters
         Doc theDoc;
 
         string processName = "AcroRd32";
-
+        new string programName = "Adobe Acrobat Reader DC";
         new string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)", "~" };
 
         public AdobeReaderProgram(string filePath, string savePath, string extension, int dpi)
         {
             base.keys = keys;
             base.extension = extension;
+            base.programName = programName;
             presentationName = Path.GetFileNameWithoutExtension(filePath);
             Launch(processName, filePath);
             CreateDirectory(savePath);
             Configure(filePath, dpi);
-            SetProcess();
         }
 
         public override void Configure(string filePath, int dpi)
@@ -50,12 +46,24 @@ namespace ConsoleTest.Presenters
 
         public override void SetProcess()
         {
+            Process firstProcess = null;
             foreach (var p in Process.GetProcesses())
             {
-                if (p.ProcessName == process.ProcessName && p.Id != process.Id)
+                if (p.ProcessName == processName)
                 {
-                    process = p;
-                    break;
+                    if (firstProcess == null)
+                        firstProcess = p;
+
+                    if (firstProcess.StartTime > p.StartTime)
+                    {
+                        processId = firstProcess.Id;
+                        break;
+                    }
+                    else if (firstProcess.StartTime < p.StartTime)
+                    {
+                        processId = p.Id;
+                        break;
+                    }
                 }
             }
         }
