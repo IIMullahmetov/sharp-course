@@ -46,8 +46,7 @@ namespace MobileApp
             {
                 Configure((string)message);
                 commandEvent = new ManualResetEvent(false);
-                string presentationName = GetPresentationName();
-                Console.WriteLine(presentationName);
+                GetPresentationName();
                 int slidesCount = GetSlidesCount();
                 int i = 1;
                 while (i <= slidesCount)
