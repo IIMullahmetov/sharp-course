@@ -43,7 +43,7 @@ namespace ConsoleTest
                     command = presenter.GetCommandGoPage(code);
                     break;
             }
-            if (WindowObserver.IsPresentationWindow(presenter)) //если сейчас активное окно - это окно презентации
+            if (WindowObserver.IsMyPresentation(presenter)) //если сейчас активное окно - это окно презентации
             {
                 SendKeys.SendWait(command);
                 return true;

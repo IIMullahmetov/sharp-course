@@ -44,7 +44,15 @@ namespace ConsoleTest.Presenters
             return GetKey(4) + code + GetKey(5);
         }
 
-        public override void SetProcess()
+        public override void SetProcessId()
+        {
+            if (process.HasExited)
+                SetOldProcess();
+            else
+                SetNewProcess();
+        }
+
+        private void SetOldProcess()
         {
             Process firstProcess = null;
             foreach (var p in Process.GetProcesses())
@@ -53,17 +61,33 @@ namespace ConsoleTest.Presenters
                 {
                     if (firstProcess == null)
                         firstProcess = p;
+                    else
+                    {
+                        if (firstProcess.StartTime > p.StartTime)
+                        {
+                            processId = firstProcess.Id;
+                            //process = firstProcess;
+                        }
+                        else if (firstProcess.StartTime < p.StartTime)
+                        {
+                            processId = p.Id;
+                            //process = p;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
 
-                    if (firstProcess.StartTime > p.StartTime)
-                    {
-                        processId = firstProcess.Id;
-                        break;
-                    }
-                    else if (firstProcess.StartTime < p.StartTime)
-                    {
-                        processId = p.Id;
-                        break;
-                    }
+        private void SetNewProcess()
+        {
+            foreach (var p in Process.GetProcesses())
+            {
+                if (p.ProcessName == processName && process.Id != p.Id)
+                {
+                    processId = p.Id;
+                    //process = p;
+                    break;
                 }
             }
         }

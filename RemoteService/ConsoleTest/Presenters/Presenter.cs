@@ -34,6 +34,7 @@ namespace ConsoleTest.Presenters
             startInfo.WindowStyle = ProcessWindowStyle.Maximized;
 
             process = Process.Start(startInfo);
+            Console.WriteLine(process.Id);
         }
 
         public void CreateDirectory(string savePath)
@@ -66,7 +67,7 @@ namespace ConsoleTest.Presenters
 
         public string GetPresentationWindowName() { return presentationWindowName; }
 
-        public abstract void SetProcess();
+        public abstract void SetProcessId();
 
         public int GetProcessId() { return processId; }
 

@@ -61,7 +61,7 @@ namespace MobileApp
 
         public void Configure(string IP)
         {
-            ipAddress = IPAddress.Parse("192.168.0.2"); //присваиваем IP-адрес
+            ipAddress = IPAddress.Parse("192.168.0.7"); //присваиваем IP-адрес
             //ipAddress = IPAddress.Parse(IP); //присваиваем IP-адрес
             ipEndPoint = new IPEndPoint(ipAddress, port); // создаем локальную конечную точку
             socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // создаем основной сокет

@@ -58,17 +58,22 @@ namespace ConsoleTest.Presenters
             return code + GetKey(4);
         }
 
-        public override void SetProcess()
+        public override void SetProcessId()
         {
-            foreach (var p in Process.GetProcesses())
+            if (process.HasExited)
             {
-                if (p.ProcessName == processName)
+                foreach (var p in Process.GetProcesses())
                 {
-                    //process = p;
-                    processId = p.Id;
-                    break;
+                    if (p.ProcessName == processName)
+                    {
+                        processId = p.Id;
+                        //process = p;
+                        break;
+                    }
                 }
             }
+            else
+                processId = process.Id;
         }
 
         public override void Clear()

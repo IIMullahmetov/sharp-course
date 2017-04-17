@@ -27,7 +27,7 @@ namespace ConsoleTest
             Configure();
             SetSocket();
             NewThreadSendImages(imageBufferLength);
-            presenter.SetProcess();
+            //presenter.SetProcessId();
             ListenPort(metaBufferLength);
         }
 
