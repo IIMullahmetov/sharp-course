@@ -72,7 +72,7 @@ namespace ConsoleTest
 
         public void SendPresentationData(int slidesCount)
         {
-            handler.Send(BitConverter.GetBytes(presenter.GetPresentationName().Length)); //отправляем метаданные
+            handler.Send(BitConverter.GetBytes(presenter.GetPresentationName().Length)); //отправляем метаданные названия презентации
             handler.Send(Encoding.Unicode.GetBytes(presenter.GetPresentationName())); //отправляем название презентации
             handler.Send(BitConverter.GetBytes(slidesCount)); //отправляем количество слайдов
         }
@@ -114,24 +114,23 @@ namespace ConsoleTest
             }
         }
 
-        public Task<string> AsyncParseAndSendCode(byte[] receiveBuffer)
+        public Task<int> AsyncParseAndSendCode(byte[] receiveBuffer)
         {
             return Task.Run(() =>
             {
-                string response;
-                Console.WriteLine("\nServerTask - " + Encoding.Unicode.GetString(receiveBuffer) + "\n");
+                int response;
                 if (KeySend.ParseCommand(presenter, receiveBuffer))
-                    response = "-1";
+                    response = -1;
                 else
-                    response = "-2";
+                    response = -2;
                 SendResponse(response);
                 return response;
             });
         }
 
-        public void SendResponse(string response) //отправка данных (команды)
+        public void SendResponse(int response) //отправка данных (команды)
         {
-            byte[] sendBuffer = Encoding.Unicode.GetBytes(response); //буфер для отправки
+            byte[] sendBuffer = BitConverter.GetBytes(response); //буфер для отправки
             handler.Send(sendBuffer); //отправка данных
         }
     }

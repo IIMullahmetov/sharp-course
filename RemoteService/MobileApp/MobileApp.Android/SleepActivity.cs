@@ -39,13 +39,13 @@ namespace MobileApp.Droid
         {
             if (keyCode == Keycode.VolumeDown)
             {
-                MainPage.Request("-1");
+                MainPage.Request(-1);
                 return true;
             }
 
             if (keyCode == Keycode.VolumeUp)
             {
-                MainPage.Request("-2");
+                MainPage.Request(-2);
                 return true;
             }
             return base.OnKeyDown(keyCode, e);

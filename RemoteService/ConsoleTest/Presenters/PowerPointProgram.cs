@@ -53,7 +53,7 @@ namespace ConsoleTest.Presenters
             oPre.Slides[index].Export(savePath + index + extension, format, width, height);
         }
 
-        public override string GetCommandGoPage(string code)
+        public override string GetCommandGoPage(int code)
         {
             return code + GetKey(4);
         }

@@ -26,7 +26,7 @@ namespace MobileApp
         //Размер буфера для метаданных
         int metaBufferLength;
         //Событие принятия команды
-        ManualResetEvent commandEvent;
+        AutoResetEvent commandEvent;
         //Идет загрузка изображений
         bool uploadingImages = true;
         //Ответ
@@ -45,7 +45,7 @@ namespace MobileApp
             return Task.Run(() =>
             {
                 Configure((string)message);
-                commandEvent = new ManualResetEvent(false);
+                commandEvent = new AutoResetEvent(false);
                 GetPresentationName();
                 int slidesCount = GetSlidesCount();
                 int i = 1;
@@ -89,9 +89,8 @@ namespace MobileApp
         {
             byte[] receiveMetaBuffer = new byte[metaBufferLength]; //буфер для метаданных
             socket.Receive(receiveMetaBuffer); //записываем метаданные
-            string strCode = Encoding.Unicode.GetString(receiveMetaBuffer);
             int intCode = BitConverter.ToInt32(receiveMetaBuffer, 0);
-            if (strCode == "-1" || strCode == "-2")
+            if (intCode == -1 || intCode == -2)
             {
                 response = intCode;
                 commandEvent.Set();
@@ -127,16 +126,13 @@ namespace MobileApp
             return byteArray;
         }
 
-        public Task<int> Request(string message)
+        public Task<int> Request(int message)
         {
             return Task.Run(() =>
             {
                 SendCode(message);
                 if (uploadingImages)
-                {
                     commandEvent.WaitOne();
-                    commandEvent.Reset();
-                }
                 else
                     response = ReceiveCode();
 
@@ -145,9 +141,9 @@ namespace MobileApp
             });
         }
 
-        public void SendCode(string message)
+        public void SendCode(int message)
         {
-            byte[] sendBuffer = Encoding.Unicode.GetBytes(message); // массив с данными
+            byte[] sendBuffer = BitConverter.GetBytes(message); // массив с данными
             socket.Send(sendBuffer);
         }
 

@@ -39,7 +39,7 @@ namespace ConsoleTest.Presenters
             theDoc.Rendering.Save(savePath + index.ToString() + extension);
         }
 
-        public override string GetCommandGoPage(string code)
+        public override string GetCommandGoPage(int code)
         {
             return GetKey(4) + code + GetKey(5);
         }

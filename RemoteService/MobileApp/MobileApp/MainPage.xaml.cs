@@ -46,7 +46,7 @@ namespace MobileApp
             }
         }
 
-        public static async void AsyncRequest(string message)
+        public static async void AsyncRequest(int message)
         {
             int code = await cc.Request(message);
             //TODO: ЗДЕСЬ РЕАКЦИЯ НА ОТВЕТ
@@ -54,41 +54,41 @@ namespace MobileApp
 
         private void NextClicked(object sender, EventArgs e)
         {
-            AsyncRequest("-1");
+            AsyncRequest(-1);
             NextButton.BackgroundColor = Color.Red;
         }
 
         private void PrevClicked(object sender, EventArgs e)
         {
-            AsyncRequest("-2");
+            AsyncRequest(-2);
             PrevButton.BackgroundColor = Color.Red;
         }
 
         private void PlayClicked(object sender, EventArgs e)
         {
-            AsyncRequest("-3");
+            AsyncRequest(-3);
             PlayButton.BackgroundColor = Color.Red;
         }
 
         private void StopClicked(object sender, EventArgs e)
         {
-            AsyncRequest("-4");
+            AsyncRequest(-4);
             StopButton.BackgroundColor = Color.Red;
         }
 
         private void ExitClicked(object sender, EventArgs e)
         {
-            AsyncRequest("-5");
+            AsyncRequest(-5);
             ExitButton.BackgroundColor = Color.Red;
         }
 
         private void images_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            var index = ((images.ItemsSource as List<ImageSource>).IndexOf(e.SelectedItem as ImageSource) + 1).ToString();
+            var index = ((images.ItemsSource as List<ImageSource>).IndexOf(e.SelectedItem as ImageSource) + 1);
             AsyncRequest(index);
         }
 
-        public static void Request(string message)
+        public static void Request(int message)
         {
             AsyncRequest(message);
         }

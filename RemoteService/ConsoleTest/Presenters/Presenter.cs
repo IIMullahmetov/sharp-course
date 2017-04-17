@@ -6,8 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//СЛЕДИТЬ ЗА ПРИЛОЖЕНИЕМ ЛУЧШЕ ЧЕРЕЗ ОБЫЧНЫЕ "ОКНА" WINDOWS
-//UPDATE - ВАРИАНТ ВЫШЕ - ТЕРЯЕМ БЫСТРЫЙ ОТЗЫВЧИВОСТЬ
+//НУЖНО ЗАВЕРШАТЬ ПРОЦЕСС POWERPNT
 
 namespace ConsoleTest.Presenters
 {
@@ -59,7 +58,7 @@ namespace ConsoleTest.Presenters
 
         public string GetKey(int index) { return keys[index]; }
 
-        public abstract string GetCommandGoPage(string code);
+        public abstract string GetCommandGoPage(int code);
 
         public string GetExtension() { return extension; }
 
