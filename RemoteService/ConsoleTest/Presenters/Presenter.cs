@@ -33,7 +33,6 @@ namespace ConsoleTest.Presenters
             startInfo.WindowStyle = ProcessWindowStyle.Maximized;
 
             process = Process.Start(startInfo);
-            Console.WriteLine(process.Id);
         }
 
         public void CreateDirectory(string savePath)
