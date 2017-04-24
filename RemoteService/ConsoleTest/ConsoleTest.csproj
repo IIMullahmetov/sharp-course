@@ -65,7 +65,6 @@
   <ItemGroup>
     <Compile Include="KeySend.cs" />
     <Compile Include="ServerImageConverter.cs" />
-    <Compile Include="ImagesData.cs" />
     <Compile Include="Presenters\AdobeReaderProgram.cs" />
     <Compile Include="Presenters\PowerPointProgram.cs" />
     <Compile Include="Presenters\Presenter.cs" />

@@ -20,14 +20,17 @@ namespace ConsoleTest
         Socket handler;
         //Объект презентации
         Presenter presenter;
+        //
+        ManualResetEvent createEvent;
 
-        public void Connection(Presenter presenter, int imageBufferLength, int metaBufferLength)
+        public void Connection(Presenter presenter, ManualResetEvent createEvent, int imageBufferLength, int metaBufferLength)
         {
             this.presenter = presenter;
             Configure();
             SetSocket();
-            NewThreadSendImages(imageBufferLength);
-            //presenter.SetProcessId();
+            this.createEvent = createEvent;
+            NewThreadRenderingImages();
+            NewThreadSendDataAndImages(imageBufferLength);
             ListenPort(metaBufferLength);
         }
 
@@ -49,25 +52,30 @@ namespace ConsoleTest
             handler = listenSocket.Accept(); //получаем подключение
         }
 
-        public void NewThreadSendImages(int imageBufferLength)
+        public void NewThreadRenderingImages()
         {
-            var data = new ImagesData(presenter.GetSavePath(), presenter.GetSlidesCount(), imageBufferLength);
-            ThreadPool.QueueUserWorkItem(new WaitCallback(SendData), data);
+            ThreadPool.QueueUserWorkItem((RenderingImages) =>
+            {
+                presenter.SavePagesRendering();
+            });
         }
 
-        public void SendData(object obj)
+        public void NewThreadSendDataAndImages(int imageBufferLength)
         {
-            var data = (ImagesData)obj;
-            SendPresentationData(data.slidesCount); //отправляем сведения о презентации
-            for (int i = 1; i <= data.slidesCount; i++)
+            ThreadPool.QueueUserWorkItem((SendData) =>
             {
-                Console.WriteLine(i);
+                ServerImageConverter imageConverter = new ServerImageConverter(presenter, createEvent);
 
-                presenter.SavePageRendering(i);
-                byte[] byteImage = ServerImageConverter.ImageToByteArray(ServerImageConverter.GetImage(presenter, data.savePath, i)); //берем изображение и переводим в массив байт
-                SendImage(byteImage, data.imageBufferLength); //отправка изображения
-            }
-            presenter.Clear();
+                SendPresentationData(presenter.GetSlidesCount()); //отправляем сведения о презентации
+                for (int i = 1; i <= presenter.GetSlidesCount(); i++)
+                {
+                    Console.WriteLine(i);
+
+                    byte[] byteImage = imageConverter.ImageToByteArray(imageConverter.GetImage(i)); //берем изображение и переводим в массив байт
+                    SendImage(byteImage, imageBufferLength); //отправка изображения
+                }
+                presenter.Clear();
+            });
         }
 
         public void SendPresentationData(int slidesCount)

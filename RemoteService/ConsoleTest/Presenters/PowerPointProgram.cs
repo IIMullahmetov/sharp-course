@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-
+using System.Threading;
 using Office = Microsoft.Office.Core;
 using PowerPoint = Microsoft.Office.Interop.PowerPoint;
 
@@ -23,14 +23,16 @@ namespace ConsoleTest.Presenters
         private int width;
         private int height;
 
-        public PowerPointProgram(string filePath, string savePath, string extension, int dpi)
+        public PowerPointProgram(ManualResetEvent createEvent, string filePath, string savePath, string extension, int dpi)
         {
+            base.createEvent = createEvent;
             base.keys = keys;
             base.extension = extension;
             base.programName = programName;
             base.presentationWindowName = presentationWindowName;
             presentationName = Path.GetFileNameWithoutExtension(filePath);
             format = extension.Substring(1, extension.Length - 1);
+            DeleteDirectory(savePath);
             Launch(processName, filePath);
             CreateDirectory(savePath);
             Configure(filePath, dpi);
@@ -51,6 +53,16 @@ namespace ConsoleTest.Presenters
         public override void SavePageRendering(int index)
         {
             oPre.Slides[index].Export(savePath + index + extension, format, width, height);
+        }
+
+        public override void SavePagesRendering()
+        {
+            for (int i = 1; i <= GetSlidesCount(); i++)
+            {
+                createEvent.Reset();
+                oPre.Slides[i].Export(savePath + i + extension, format, width, height);
+                createEvent.Set();
+            }
         }
 
         public override string GetCommandGoPage(int code)

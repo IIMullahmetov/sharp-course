@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using WebSupergoo.ABCpdf10;
 
 namespace ConsoleTest.Presenters
@@ -13,12 +14,14 @@ namespace ConsoleTest.Presenters
         new string programName = "Adobe Acrobat Reader DC";
         new string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)", "~" };
 
-        public AdobeReaderProgram(string filePath, string savePath, string extension, int dpi)
+        public AdobeReaderProgram(ManualResetEvent createEvent, string filePath, string savePath, string extension, int dpi)
         {
+            base.createEvent = createEvent;
             base.keys = keys;
             base.extension = extension;
             base.programName = programName;
             presentationName = Path.GetFileNameWithoutExtension(filePath);
+            DeleteDirectory(savePath);
             Launch(processName, filePath);
             CreateDirectory(savePath);
             Configure(filePath, dpi);
@@ -37,6 +40,18 @@ namespace ConsoleTest.Presenters
             theDoc.PageNumber = index;
             theDoc.Rect.String = theDoc.CropBox.String;
             theDoc.Rendering.Save(savePath + index.ToString() + extension);
+        }
+
+        public override void SavePagesRendering()
+        {
+            for (int i = 1; i <= GetSlidesCount(); i++)
+            {
+                createEvent.Reset();
+                theDoc.PageNumber = i;
+                theDoc.Rect.String = theDoc.CropBox.String;
+                theDoc.Rendering.Save(savePath + i.ToString() + extension);
+                createEvent.Set();
+            }
         }
 
         public override string GetCommandGoPage(int code)

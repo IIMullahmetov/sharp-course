@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 //НУЖНО ЗАВЕРШАТЬ ПРОЦЕСС POWERPNT
@@ -13,6 +14,7 @@ namespace ConsoleTest.Presenters
     abstract class Presenter
     {
         protected Process process;
+        protected ManualResetEvent createEvent;
         protected int processId;
         protected int count;
         protected string[] keys;
@@ -35,19 +37,23 @@ namespace ConsoleTest.Presenters
             process = Process.Start(startInfo);
         }
 
-        public void CreateDirectory(string savePath)
+        public void DeleteDirectory(string savePath)
         {
             this.savePath = savePath;
+            if (Directory.Exists(savePath))
+                Directory.Delete(savePath, true);
+        }
 
-            if (!Directory.Exists(savePath))
-            {
-                Directory.CreateDirectory(savePath);
-            }
+        public void CreateDirectory(string savePath)
+        {
+            Directory.CreateDirectory(savePath);
         }
 
         public abstract void Configure(string filePath, int dpi);
 
         public abstract void SavePageRendering(int index);
+
+        public abstract void SavePagesRendering();
 
         public string GetSavePath() { return savePath; }
 
