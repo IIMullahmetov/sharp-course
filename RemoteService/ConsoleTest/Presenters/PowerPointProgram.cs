@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Office = Microsoft.Office.Core;
@@ -55,11 +56,12 @@ namespace ConsoleTest.Presenters
             oPre.Slides[index].Export(savePath + index + extension, format, width, height);
         }
 
-        public override void SavePagesRendering()
+        public override void SavePagesRendering(Socket handler)
         {
             for (int i = 1; i <= GetSlidesCount(); i++)
             {
                 createEvent.Reset();
+                if (handler == null) return; //ВОТ ЗДЕСЬ, АЛЬМЮСЛИ
                 oPre.Slides[i].Export(savePath + i + extension, format, width, height);
                 createEvent.Set();
             }

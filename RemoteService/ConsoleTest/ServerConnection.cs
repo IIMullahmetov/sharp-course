@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+//ПЕРЕД ЗАКРЫТИЕМ НАДО ЗАВЕРШАТЬ СОКЕТЫ
+
 namespace ConsoleTest
 {
     class ServerConnection
@@ -56,7 +58,7 @@ namespace ConsoleTest
         {
             ThreadPool.QueueUserWorkItem((RenderingImages) =>
             {
-                presenter.SavePagesRendering();
+                presenter.SavePagesRendering(handler);
             });
         }
 
@@ -65,16 +67,22 @@ namespace ConsoleTest
             ThreadPool.QueueUserWorkItem((SendData) =>
             {
                 ServerImageConverter imageConverter = new ServerImageConverter(presenter, createEvent);
-
-                SendPresentationData(presenter.GetSlidesCount()); //отправляем сведения о презентации
-                for (int i = 1; i <= presenter.GetSlidesCount(); i++)
+                try
                 {
-                    Console.WriteLine(i);
+                    SendPresentationData(presenter.GetSlidesCount()); //отправляем сведения о презентации
+                    for (int i = 1; i <= presenter.GetSlidesCount(); i++)
+                    {
+                        Console.WriteLine(i);
 
-                    byte[] byteImage = imageConverter.ImageToByteArray(imageConverter.GetImage(i)); //берем изображение и переводим в массив байт
-                    SendImage(byteImage, imageBufferLength); //отправка изображения
+                        byte[] byteImage = imageConverter.ImageToByteArray(imageConverter.GetImage(i)); //берем изображение и переводим в массив байт
+                        SendImage(byteImage, imageBufferLength); //отправка изображения
+                    }
+                    presenter.Clear();
                 }
-                presenter.Clear();
+                catch (SocketException)
+                {
+                    return;
+                }
             });
         }
 
@@ -113,12 +121,12 @@ namespace ConsoleTest
             }
             catch (Exception e)
             {
+                //ВОТ ЗДЕСЬ УВЕДОМЛЕНИЕ О РАЗРЫВЕ СВЯЗИ ИЛИ ОТКЛЮЧЕНИИ
                 Console.WriteLine(e.Message);
             }
             finally //освобождаем сокеты
             {
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                Shutdown();
             }
         }
 
@@ -136,10 +144,23 @@ namespace ConsoleTest
             });
         }
 
-        public void SendResponse(int response) //отправка данных (команды)
+        public void SendResponse(int response) //отправка ответа (команды)
         {
-            byte[] sendBuffer = BitConverter.GetBytes(response); //буфер для отправки
-            handler.Send(sendBuffer); //отправка данных
+            try
+            {
+                byte[] sendBuffer = BitConverter.GetBytes(response); //буфер для отправки
+                handler.Send(sendBuffer); //отправка данных
+            }
+            catch (SocketException)
+            {
+                return;
+            }
+        }
+
+        public void Shutdown()
+        {
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
         }
     }
 }

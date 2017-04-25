@@ -41,7 +41,7 @@ namespace ConsoleTest
                 case codeClose: // выход
                     command = presenter.GetKey(3);
                     break;
-                case codeExit: //закрытие программы
+                case codeExit: //закрытие презентации
                     break;
                 default: //переход к слайду
                     command = presenter.GetCommandGoPage(code);

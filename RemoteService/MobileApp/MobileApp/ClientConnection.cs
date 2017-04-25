@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-//!!!ПЕРЕД ЗАВЕРШЕНИЕМ РАБОТЫ НУЖНО ВЫЗЫВАТЬ Shutdown() - закрытие сокетов
-
 namespace MobileApp
 {
     class ClientConnection
@@ -32,7 +30,7 @@ namespace MobileApp
         //Ответ
         int response;
         //Список изображений
-        List<ImageSource> images = new List<ImageSource>();
+        List<ImageSource> images;
 
         public ClientConnection(int imageBufferLength, int metaBufferLength)
         {
@@ -46,16 +44,26 @@ namespace MobileApp
             {
                 Configure((string)message);
                 commandEvent = new AutoResetEvent(false);
-                GetPresentationName();
-                int slidesCount = GetSlidesCount();
-                int i = 1;
-                while (i <= slidesCount)
+                try
                 {
-                    if (ReceiveDistributor() == 0)
-                        i++;
+                    GetPresentationName();
+                    int slidesCount = GetSlidesCount();
+                    int i = 1;
+                    images = new List<ImageSource>();
+                    while (i <= slidesCount)
+                    {
+                        if (ReceiveDistributor() == 0)
+                            i++;
+                    }
+                    uploadingImages = false;
+                    return images;
                 }
-                uploadingImages = false;
-                return images;
+                catch (SocketException)
+                {
+                    //ВОТ ЗДЕСЬ УВЕДОМЛЕНИЕ О РАЗРЫВЕ СВЯЗИ И ВЫХОД К СТРАНИЦЕ КОМПОВ
+                    Shutdown();
+                    return null;
+                }
             });
         }
 
@@ -72,7 +80,7 @@ namespace MobileApp
         {
             byte[] receiveBuffer = new byte[metaBufferLength]; //буфер для метаданных
             socket.Receive(receiveBuffer); //принимаем метаданные
-            int nameLength = BitConverter.ToInt32(receiveBuffer , 0) * 2; //переводим в число
+            int nameLength = BitConverter.ToInt32(receiveBuffer, 0) * 2; //переводим в число
             Array.Resize(ref receiveBuffer, nameLength);
             socket.Receive(receiveBuffer); //принимаем название
             return Encoding.Unicode.GetString(receiveBuffer);
@@ -130,14 +138,23 @@ namespace MobileApp
         {
             return Task.Run(() =>
             {
-                SendCode(message);
-                if (uploadingImages)
-                    commandEvent.WaitOne();
-                else
-                    response = ReceiveCode();
+                try
+                {
+                    SendCode(message);
+                    if (uploadingImages)
+                        commandEvent.WaitOne();
+                    else
+                        response = ReceiveCode();
 
-                Console.WriteLine("ClientTask - " + response);
-                return response;
+                    Console.WriteLine("ClientTask - " + response);
+                    return response;
+                }
+                catch (SocketException)
+                {
+                    //УВЕДОМЛЕНИЕ О РАЗРЫВЕ СВЯЗИ И ВЫХОД К СТРАНИЦЕ КОМПОВ
+                    Shutdown();
+                    return -2;
+                }
             });
         }
 
@@ -154,19 +171,17 @@ namespace MobileApp
             return BitConverter.ToInt32(receiveBuffer, 0);
         }
 
-        /*
-                        public void Shutdown() // освобождаем сокеты
-                        {
-                            try
-                            {
-                                socket.Shutdown(SocketShutdown.Both);
-                                socket.Close();
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e.Message);
-                            }
-                        }
-        */
+        public void Shutdown() // освобождаем сокеты
+        {
+            try
+            {
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
+            }
+            catch (SocketException)
+            {
+                return;
+            }
+        }
     }
 }

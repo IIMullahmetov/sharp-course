@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Sockets;
 using System.Threading;
-using WebSupergoo.ABCpdf10;
 
 namespace ConsoleTest.Presenters
 {
     class AdobeReaderProgram : Presenter
     {
-        Doc theDoc;
-
         string processName = "AcroRd32";
         new string programName = "Adobe Acrobat Reader DC";
         new string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)", "~" };
@@ -29,21 +27,26 @@ namespace ConsoleTest.Presenters
 
         public override void Configure(string filePath, int dpi)
         {
+            /*
             theDoc = new Doc();
             theDoc.Read(filePath);
             theDoc.Rendering.DotsPerInch = dpi;
             count = theDoc.PageCount;
+            */
         }
 
         public override void SavePageRendering(int index)
         {
+            /*
             theDoc.PageNumber = index;
             theDoc.Rect.String = theDoc.CropBox.String;
             theDoc.Rendering.Save(savePath + index.ToString() + extension);
+            */
         }
 
-        public override void SavePagesRendering()
+        public override void SavePagesRendering(Socket handler)
         {
+            /*
             for (int i = 1; i <= GetSlidesCount(); i++)
             {
                 createEvent.Reset();
@@ -52,6 +55,7 @@ namespace ConsoleTest.Presenters
                 theDoc.Rendering.Save(savePath + i.ToString() + extension);
                 createEvent.Set();
             }
+            */
         }
 
         public override string GetCommandGoPage(int code)
@@ -107,6 +111,6 @@ namespace ConsoleTest.Presenters
             }
         }
 
-        public override void Clear() { theDoc.Clear(); }
+        public override void Clear() { /*theDoc.Clear();*/ }
     }
 }

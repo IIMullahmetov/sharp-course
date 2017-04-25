@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace ConsoleTest.Presenters
 
         public abstract void SavePageRendering(int index);
 
-        public abstract void SavePagesRendering();
+        public abstract void SavePagesRendering(Socket handler);
 
         public string GetSavePath() { return savePath; }
 

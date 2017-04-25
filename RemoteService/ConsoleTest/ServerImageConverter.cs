@@ -25,35 +25,8 @@ namespace ConsoleTest
         public Image GetImage(int index) //считываем изображение
         {
             filePath = savePath + index + presenter.GetExtension();
-            while (!ExistsImage(filePath))
-                createEvent.WaitOne();
-            Thread.Sleep(50);
+            createEvent.WaitOne();
             return Image.FromFile(filePath);
-        }
-
-        private bool ExistsImage(string filePath)
-        {
-            Console.WriteLine("СЕЙЧАС - " + DateTime.Now);
-            Console.WriteLine("ВРЕМЯ ЗАПИСИ - " + File.GetLastWriteTime(filePath));
-            if (File.Exists(filePath))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private bool FileIsBeingUsed(string fileName)
-        {
-            try
-            {
-                File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
-            }
-
-            catch (Exception exp)
-            {
-                return true;
-            }
-            return false;
         }
 
         public byte[] ImageToByteArray(Image img) //конвертируем картинку в массив байт
