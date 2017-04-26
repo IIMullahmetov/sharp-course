@@ -14,6 +14,7 @@ namespace ConsoleTest
         string savePath;
         ManualResetEvent createEvent;
         string filePath;
+        static int saveIndex;
 
         public ServerImageConverter(Presenter presenter, ManualResetEvent createEvent)
         {
@@ -25,14 +26,23 @@ namespace ConsoleTest
         public Image GetImage(int index) //считываем изображение
         {
             filePath = savePath + index + presenter.GetExtension();
-            createEvent.WaitOne();
-            return Image.FromFile(filePath);
+            if (saveIndex < index)
+                createEvent.WaitOne();
+            Image img = Image.FromFile(filePath);
+            Bitmap btm = new Bitmap(img);
+            img.Dispose();
+            return btm;
         }
 
         public byte[] ImageToByteArray(Image img) //конвертируем картинку в массив байт
         {
             ImageConverter converter = new ImageConverter();
             return (byte[])converter.ConvertTo(img, typeof(byte[]));
+        }
+
+        public static void SetIndex(int i)
+        {
+            saveIndex = i;
         }
     }
 }

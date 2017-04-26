@@ -77,11 +77,14 @@ namespace ConsoleTest
                         byte[] byteImage = imageConverter.ImageToByteArray(imageConverter.GetImage(i)); //берем изображение и переводим в массив байт
                         SendImage(byteImage, imageBufferLength); //отправка изображения
                     }
-                    presenter.Clear();
                 }
                 catch (SocketException)
                 {
                     return;
+                }
+                finally
+                {
+                    presenter.Clear();
                 }
             });
         }
@@ -130,17 +133,16 @@ namespace ConsoleTest
             }
         }
 
-        public Task<int> AsyncParseAndSendCode(byte[] receiveBuffer)
+        public Task AsyncParseAndSendCode(byte[] receiveBuffer)
         {
             return Task.Run(() =>
             {
                 int response;
-                if (KeySend.ParseCommand(presenter, receiveBuffer))
+                if (KeySend.ParseCommand(this, presenter, receiveBuffer))
                     response = -1;
                 else
                     response = -2;
                 SendResponse(response);
-                return response;
             });
         }
 
@@ -155,12 +157,23 @@ namespace ConsoleTest
             {
                 return;
             }
+            catch (ObjectDisposedException)
+            {
+                return;
+            }
         }
 
         public void Shutdown()
         {
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Close();
+            try
+            {
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+            }
+            catch (ObjectDisposedException)
+            {
+                return;
+            }
         }
     }
 }

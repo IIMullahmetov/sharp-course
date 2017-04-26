@@ -11,44 +11,48 @@ namespace ConsoleTest.Presenters
 {
     class PowerPointProgram : Presenter
     {
-        PowerPoint.Application oPowerPoint = null;
-        PowerPoint.Presentations oPres = null;
-        PowerPoint.Presentation oPre = null;
-        PowerPoint.Slides oSlides = null;
-
-        string processName = "POWERPNT";
-        new string programName = "PowerPoint";
-        new string presentationWindowName = "Демонстрация PowerPoint";
-        new string[] keys = { "{RIGHT}", "{LEFT}", "{F5}", "{ESC}", "~" };
+        private PowerPoint.Application oPowerPoint = null;
+        private PowerPoint.Presentations oPres = null;
+        private PowerPoint.Presentation oPre = null;
+        private PowerPoint.Slides oSlides = null;
 
         private int width;
         private int height;
 
-        public PowerPointProgram(ManualResetEvent createEvent, string filePath, string savePath, string extension, int dpi)
+        public PowerPointProgram(ManualResetEvent createEvent, string presentationPath, string savePath, string extension, int dpi)
+            : base(createEvent, presentationPath, savePath, extension, dpi)
         {
-            base.createEvent = createEvent;
-            base.keys = keys;
-            base.extension = extension;
-            base.programName = programName;
-            base.presentationWindowName = presentationWindowName;
-            presentationName = Path.GetFileNameWithoutExtension(filePath);
-            format = extension.Substring(1, extension.Length - 1);
-            DeleteDirectory(savePath);
-            Launch(processName, filePath);
-            CreateDirectory(savePath);
-            Configure(filePath, dpi);
+            SetParametres();
+            ConfigureRendering();
+            Launch();
         }
 
-        public override void Configure(string filePath, int dpi)
+        public void SetParametres()
         {
-            width = dpi * 10;
-            height = Convert.ToInt32(dpi * 7.5);
+            keys = new string[] { "{RIGHT}", "{LEFT}", "{F5}", "{ESC}", "%(+{F4})", "~" };
+            programName = "PowerPoint";
+            presentationWindowName = "Демонстрация PowerPoint";
+            processName = "POWERPNT";
+        }
 
-            oPowerPoint = new PowerPoint.Application(); //запускаем приложение
-            oPres = oPowerPoint.Presentations; //презентации
-            oPre = oPres.Open(filePath, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse); //открываем презентацию
-            oSlides = oPre.Slides; //считываем слайды
-            count = oPre.Slides.Count;
+        public override void ConfigureRendering()
+        {
+            try
+            {
+                width = dpi * 10;
+                height = Convert.ToInt32(dpi * 7.5);
+
+                oPowerPoint = new PowerPoint.Application(); //запускаем приложение
+                oPres = oPowerPoint.Presentations; //презентации
+                oPre = oPres.Open(presentationPath, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse, Office.MsoTriState.msoFalse); //открываем презентацию
+                oSlides = oPre.Slides; //считываем слайды
+                count = oPre.Slides.Count;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                //УВЕДОМЛЕНИЕ О ТОМ, ЧТО ПУТЬ УКАЗАН НЕВЕРНО
+                return;
+            }
         }
 
         public override void SavePageRendering(int index)
@@ -63,15 +67,17 @@ namespace ConsoleTest.Presenters
                 createEvent.Reset();
                 if (handler == null) return; //ВОТ ЗДЕСЬ, АЛЬМЮСЛИ
                 oPre.Slides[i].Export(savePath + i + extension, format, width, height);
+                ServerImageConverter.SetIndex(i);
                 createEvent.Set();
             }
+            //ServerImageConverter.SetIndex(0);
         }
 
         public override string GetCommandGoPage(int code)
         {
-            return code + GetKey(4);
+            return code + GetKey(5);
         }
-
+/*
         public override void SetProcessId()
         {
             if (process.HasExited)
@@ -89,7 +95,7 @@ namespace ConsoleTest.Presenters
             else
                 processId = process.Id;
         }
-
+*/
         public override void Clear()
         {
             if (oSlides != null)

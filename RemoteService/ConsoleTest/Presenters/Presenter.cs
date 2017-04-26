@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 //НУЖНО ЗАВЕРШАТЬ ПРОЦЕСС POWERPNT
 
@@ -16,41 +13,64 @@ namespace ConsoleTest.Presenters
     {
         protected Process process;
         protected ManualResetEvent createEvent;
+        protected string[] keys;
+        protected string presentationPath;
+        protected string savePath;
+        protected string extension;
+        protected string presentationName;
+        protected string format;
+        protected string processName;
+        protected string programName;
+        protected int dpi;
         protected int processId;
         protected int count;
-        protected string[] keys;
-        protected string savePath;
-        protected string presentationName;
-        protected string extension;
-        protected string format;
-        protected string programName;
-        protected string presentationWindowName;
 
-        public void Launch(string processName, string filePath)
+        protected string presentationWindowName;
+        protected ImageFormat imageFormat;
+
+        public Presenter(ManualResetEvent createEvent, string presentationPath, string savePath, string extension, int dpi)
         {
-            string quotes = "\"";
+            this.createEvent = createEvent;
+            this.presentationPath = presentationPath;
+            this.savePath = savePath;
+            this.extension = extension;
+            this.dpi = dpi;
+            presentationName = Path.GetFileNameWithoutExtension(this.presentationPath);
+            format = extension.Substring(1, extension.Length - 1);
+        }
+
+        public void Launch()
+        {
+            DeleteDirectory();
+            StartProcess();
+            CreateDirectory();
+        }
+
+        public void StartProcess()
+        {
+            const string quote = "\"";
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = processName + ".exe";
-            startInfo.Arguments = "/o " + quotes + filePath + quotes;
+            startInfo.Arguments = "/o " + quote + presentationPath + quote;
             startInfo.WindowStyle = ProcessWindowStyle.Maximized;
 
             process = Process.Start(startInfo);
         }
 
-        public void DeleteDirectory(string savePath)
+        public void DeleteDirectory()
         {
-            this.savePath = savePath;
             if (Directory.Exists(savePath))
                 Directory.Delete(savePath, true);
         }
 
-        public void CreateDirectory(string savePath)
+        public void CreateDirectory()
         {
-            Directory.CreateDirectory(savePath);
+            if (!Directory.Exists(savePath))
+                Directory.CreateDirectory(savePath);
         }
 
-        public abstract void Configure(string filePath, int dpi);
+        public abstract void ConfigureRendering();
 
         public abstract void SavePageRendering(int index);
 
@@ -72,7 +92,7 @@ namespace ConsoleTest.Presenters
 
         public string GetPresentationWindowName() { return presentationWindowName; }
 
-        public abstract void SetProcessId();
+        public  void SetProcessId(int processId) { this.processId = processId; }
 
         public int GetProcessId() { return processId; }
 

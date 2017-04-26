@@ -8,30 +8,29 @@ namespace ConsoleTest.Presenters
 {
     class AdobeReaderProgram : Presenter
     {
-        string processName = "AcroRd32";
-        new string programName = "Adobe Acrobat Reader DC";
-        new string[] keys = { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "^(+n)", "~" };
+        //private GhostscriptRasterizer rasterizer;
 
-        public AdobeReaderProgram(ManualResetEvent createEvent, string filePath, string savePath, string extension, int dpi)
+        public AdobeReaderProgram(ManualResetEvent createEvent, string presentationPath, string savePath, string extension, int dpi)
+            : base(createEvent, presentationPath, savePath, extension, dpi)
         {
-            base.createEvent = createEvent;
-            base.keys = keys;
-            base.extension = extension;
-            base.programName = programName;
-            presentationName = Path.GetFileNameWithoutExtension(filePath);
-            DeleteDirectory(savePath);
-            Launch(processName, filePath);
-            CreateDirectory(savePath);
-            Configure(filePath, dpi);
+            SetParametres();
+            ConfigureRendering();
+            Launch();
         }
 
-        public override void Configure(string filePath, int dpi)
+        public void SetParametres()
+        {
+            keys = new string[] { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "%(+{F4})", "^(+n)", "~" };
+            programName = "Adobe Acrobat Reader DC";
+            processName = "AcroRd32";
+        }
+
+        public override void ConfigureRendering()
         {
             /*
-            theDoc = new Doc();
-            theDoc.Read(filePath);
-            theDoc.Rendering.DotsPerInch = dpi;
-            count = theDoc.PageCount;
+            rasterizer = new GhostscriptRasterizer();
+            rasterizer.Open(presentationPath);
+            count = rasterizer.PageCount;
             */
         }
 
@@ -47,22 +46,19 @@ namespace ConsoleTest.Presenters
         public override void SavePagesRendering(Socket handler)
         {
             /*
-            for (int i = 1; i <= GetSlidesCount(); i++)
+            for (var i = 1; i <= GetSlidesCount(); i++)
             {
-                createEvent.Reset();
-                theDoc.PageNumber = i;
-                theDoc.Rect.String = theDoc.CropBox.String;
-                theDoc.Rendering.Save(savePath + i.ToString() + extension);
-                createEvent.Set();
+                var img = rasterizer.GetPage(dpi, dpi, i);
+                img.Save(savePath + i + extension);
             }
             */
         }
 
         public override string GetCommandGoPage(int code)
         {
-            return GetKey(4) + code + GetKey(5);
+            return GetKey(5) + code + GetKey(6);
         }
-
+/*
         public override void SetProcessId()
         {
             if (process.HasExited)
@@ -110,7 +106,7 @@ namespace ConsoleTest.Presenters
                 }
             }
         }
-
-        public override void Clear() { /*theDoc.Clear();*/ }
+*/
+        public override void Clear() { /*rasterizer.Close();*/ }
     }
 }

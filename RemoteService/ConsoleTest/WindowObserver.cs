@@ -12,8 +12,6 @@ namespace ConsoleTest
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
-        //static Process currentProcess;
-
         public static bool IsPresentationWindow(Presenter presenter)
         {
             int currentProcessId;
@@ -30,10 +28,12 @@ namespace ConsoleTest
             int currentProcessId;
             IntPtr handle = GetForegroundWindow(); // получаем хендел активного окна
             GetWindowThreadProcessId(handle, out currentProcessId); //получаем currentProcessId потока активного окна
-            string currentProcess = Process.GetProcessById(currentProcessId).MainWindowTitle; //получаем процесс активного окна
-            if (currentProcess.StartsWith(presenter.GetPresentationName()) && currentProcess.EndsWith(presenter.GetProgramName())
-                || (presenter is PowerPointProgram && currentProcess.StartsWith(presenter.GetPresentationWindowName())))
+            string currentProcessTitle = Process.GetProcessById(currentProcessId).MainWindowTitle; //получаем процесс активного окна
+            if (currentProcessTitle.StartsWith(presenter.GetPresentationName()) && currentProcessTitle.EndsWith(presenter.GetProgramName())
+                || (presenter is PowerPointProgram && currentProcessTitle.StartsWith(presenter.GetPresentationWindowName())))
+            {
                 return true;
+            }
             else
                 return false;
         }
