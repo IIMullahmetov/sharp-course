@@ -71,7 +71,6 @@ namespace ConsoleTest.Presenters
                 ServerImageConverter.SetIndex(i);
                 createEvent.Set();
             }
-            //ServerImageConverter.SetIndex(0);
         }
 
         public override string GetCommandGoPage(int code)

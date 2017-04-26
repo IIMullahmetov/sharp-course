@@ -58,7 +58,15 @@ namespace ConsoleTest
         {
             ThreadPool.QueueUserWorkItem((RenderingImages) =>
             {
-                presenter.SavePagesRendering(handler);
+                try
+                {
+                    presenter.SavePagesRendering(handler);
+                }
+                catch (SocketException)
+                {
+                    return;
+                }
+                    
             });
         }
 
@@ -134,6 +142,7 @@ namespace ConsoleTest
             finally //освобождаем сокеты
             {
                 Shutdown();
+                Close();
             }
         }
 
@@ -172,6 +181,17 @@ namespace ConsoleTest
             try
             {
                 handler.Shutdown(SocketShutdown.Both);
+            }
+            catch (ObjectDisposedException)
+            {
+                return;
+            }
+        }
+
+        public void Close()
+        {
+            try
+            {
                 handler.Close();
             }
             catch (ObjectDisposedException)

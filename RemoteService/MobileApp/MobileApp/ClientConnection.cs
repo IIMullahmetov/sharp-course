@@ -62,6 +62,7 @@ namespace MobileApp
                 {
                     //ВОТ ЗДЕСЬ УВЕДОМЛЕНИЕ О РАЗРЫВЕ СВЯЗИ И ВЫХОД К СТРАНИЦЕ КОМПОВ
                     Shutdown();
+                    Close();
                     return null;
                 }
             });
@@ -153,6 +154,7 @@ namespace MobileApp
                 {
                     //УВЕДОМЛЕНИЕ О РАЗРЫВЕ СВЯЗИ И ВЫХОД К СТРАНИЦЕ КОМПОВ
                     Shutdown();
+                    Close();
                     return -2;
                 }
             });
@@ -171,11 +173,22 @@ namespace MobileApp
             return BitConverter.ToInt32(receiveBuffer, 0);
         }
 
-        public void Shutdown() // освобождаем сокеты
+        public void Shutdown()
         {
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
+            }
+            catch (SocketException)
+            {
+                return;
+            }
+        }
+
+        public void Close() // освобождаем сокеты
+        {
+            try
+            {
                 socket.Close();
             }
             catch (SocketException)
