@@ -65,7 +65,8 @@ namespace ConsoleTest.Presenters
             for (int i = 1; i <= GetSlidesCount(); i++)
             {
                 createEvent.Reset();
-                if (handler == null) return; //ВОТ ЗДЕСЬ, АЛЬМЮСЛИ
+                if (handler.Connected == false)  //ВОТ ЗДЕСЬ, АЛЬМЮСЛИ
+                    return;
                 oPre.Slides[i].Export(savePath + i + extension, format, width, height);
                 ServerImageConverter.SetIndex(i);
                 createEvent.Set();

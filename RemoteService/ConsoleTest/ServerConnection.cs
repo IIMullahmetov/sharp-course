@@ -82,6 +82,10 @@ namespace ConsoleTest
                 {
                     return;
                 }
+                catch (ObjectDisposedException)
+                {
+                    return;
+                }
                 finally
                 {
                     presenter.Clear();
