@@ -21,13 +21,11 @@ namespace ConsoleTest
         // Закрытие программы
         private const int codeExit = -5;
 
-        private static bool exitCommand = false;
-
         public static bool ParseCommand(ServerConnection connection, Presenter presenter, byte[] receiveBuffer)
         {
             int code = BitConverter.ToInt32(receiveBuffer, 0);
 
-            Console.WriteLine("\nServerTask - " + code + "\n");
+            Console.WriteLine("ServerTask - " + code);
 
             string command = null;
             switch (code) // определяемся с командами клиента, 49 - это код символа в ASCII
@@ -46,7 +44,6 @@ namespace ConsoleTest
                     break;
                 case codeExit: //закрытие презентации
                     command = presenter.GetKey(4);
-                    exitCommand = true;
                     break;
                 default: //переход к слайду
                     command = presenter.GetCommandGoPage(code);
@@ -55,12 +52,6 @@ namespace ConsoleTest
             if (WindowObserver.IsMyPresentation(presenter)) //если сейчас активное окно - это окно презентации
             {
                 SendKeys.SendWait(command);
-                if (exitCommand)
-                {
-                    connection.Shutdown();
-                    presenter.DeleteDirectory();
-                    exitCommand = false;
-                }
                 return true;
             }
             return false;

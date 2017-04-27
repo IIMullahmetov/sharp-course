@@ -24,6 +24,7 @@ namespace ConsoleTest
         Presenter presenter;
         //
         ManualResetEvent createEvent;
+        ManualResetEvent sendEvent;
 
         public void Connection(Presenter presenter, ManualResetEvent createEvent, int imageBufferLength, int metaBufferLength)
         {
@@ -31,6 +32,7 @@ namespace ConsoleTest
             Configure();
             SetSocket();
             this.createEvent = createEvent;
+            sendEvent = new ManualResetEvent(false);
             NewThreadRenderingImages();
             NewThreadSendDataAndImages(imageBufferLength);
             ListenPort(metaBufferLength);
@@ -83,7 +85,9 @@ namespace ConsoleTest
                         Console.WriteLine(i);
 
                         byte[] byteImage = imageConverter.ImageToByteArray(imageConverter.GetImage(i)); //берем изображение и переводим в массив байт
+                        sendEvent.Reset();
                         SendImage(byteImage, imageBufferLength); //отправка изображения
+                        sendEvent.Set();
                     }
                 }
                 catch (SocketException)
@@ -142,7 +146,6 @@ namespace ConsoleTest
             finally //освобождаем сокеты
             {
                 Shutdown();
-                Close();
             }
         }
 
@@ -155,6 +158,7 @@ namespace ConsoleTest
                     response = -1;
                 else
                     response = -2;
+                sendEvent.WaitOne();
                 SendResponse(response);
             });
         }
@@ -181,18 +185,8 @@ namespace ConsoleTest
             try
             {
                 handler.Shutdown(SocketShutdown.Both);
-            }
-            catch (ObjectDisposedException)
-            {
-                return;
-            }
-        }
-
-        public void Close()
-        {
-            try
-            {
                 handler.Close();
+                presenter.DeleteDirectory();
             }
             catch (ObjectDisposedException)
             {

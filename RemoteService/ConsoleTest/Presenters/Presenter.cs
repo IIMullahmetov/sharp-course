@@ -60,8 +60,16 @@ namespace ConsoleTest.Presenters
 
         public void DeleteDirectory()
         {
-            if (Directory.Exists(savePath))
-                Directory.Delete(savePath, true);
+            try
+            {
+                if (Directory.Exists(savePath))
+                    Directory.Delete(savePath, true);
+            }
+            catch (IOException)
+            {
+                Thread.Sleep(10);
+                DeleteDirectory();
+            }
         }
 
         public void CreateDirectory()

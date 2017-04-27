@@ -52,7 +52,7 @@ namespace MobileApp
                     images = new List<ImageSource>();
                     while (i <= slidesCount)
                     {
-                        if (ReceiveDistributor() == 0)
+                        if (ReceiveDistributor(i) == 0)
                             i++;
                     }
                     uploadingImages = false;
@@ -62,7 +62,6 @@ namespace MobileApp
                 {
                     //ВОТ ЗДЕСЬ УВЕДОМЛЕНИЕ О РАЗРЫВЕ СВЯЗИ И ВЫХОД К СТРАНИЦЕ КОМПОВ
                     Shutdown();
-                    Close();
                     return null;
                 }
             });
@@ -94,7 +93,7 @@ namespace MobileApp
             return BitConverter.ToInt32(receiveMetaBuffer, 0); //узнаем количество слайдов, которые нам придут
         }
 
-        public int ReceiveDistributor()
+        public int ReceiveDistributor(int i)
         {
             byte[] receiveMetaBuffer = new byte[metaBufferLength]; //буфер для метаданных
             socket.Receive(receiveMetaBuffer); //записываем метаданные
@@ -107,6 +106,7 @@ namespace MobileApp
             }
             else
             {
+                Console.WriteLine(i);
                 SetImage(intCode);
                 return 0;
             }
@@ -154,7 +154,6 @@ namespace MobileApp
                 {
                     //УВЕДОМЛЕНИЕ О РАЗРЫВЕ СВЯЗИ И ВЫХОД К СТРАНИЦЕ КОМПОВ
                     Shutdown();
-                    Close();
                     return -2;
                 }
             });
@@ -178,17 +177,6 @@ namespace MobileApp
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
-            }
-            catch (SocketException)
-            {
-                return;
-            }
-        }
-
-        public void Close() // освобождаем сокеты
-        {
-            try
-            {
                 socket.Close();
             }
             catch (SocketException)
