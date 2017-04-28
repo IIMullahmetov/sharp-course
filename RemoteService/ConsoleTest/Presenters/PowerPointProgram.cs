@@ -64,11 +64,10 @@ namespace ConsoleTest.Presenters
         {
             for (int i = 1; i <= GetSlidesCount(); i++)
             {
-                if (handler.Connected == false)  //ВОТ ЗДЕСЬ, АЛЬМЮСЛИ
-                    return;
+                if (handler.Connected == false) return;
                 createEvent.Reset();
                 oPre.Slides[i].Export(savePath + i + extension, format, width, height);
-                ServerImageConverter.SetIndex(i);
+                ServerImageConverter.SetSaveIndex(i);
                 createEvent.Set();
             }
         }
@@ -77,25 +76,30 @@ namespace ConsoleTest.Presenters
         {
             return code + GetKey(5);
         }
-/*
-        public override void SetProcessId()
+
+        public override string GetCommandExitProgram()
         {
-            if (process.HasExited)
-            {
-                foreach (var p in Process.GetProcesses())
-                {
-                    if (p.ProcessName == processName)
-                    {
-                        processId = p.Id;
-                        //process = p;
-                        break;
-                    }
-                }
-            }
-            else
-                processId = process.Id;
+            return GetKey(4);
         }
-*/
+        /*
+                public override void SetProcessId()
+                {
+                    if (process.HasExited)
+                    {
+                        foreach (var p in Process.GetProcesses())
+                        {
+                            if (p.ProcessName == processName)
+                            {
+                                processId = p.Id;
+                                //process = p;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                        processId = process.Id;
+                }
+        */
         public override void Clear()
         {
             if (oSlides != null)

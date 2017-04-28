@@ -6,14 +6,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-//ПЕРЕД ЗАКРЫТИЕМ НАДО ЗАВЕРШАТЬ СОКЕТЫ
-
 namespace ConsoleTest
 {
     class ServerConnection
     {
         // Порт
-        static int port = 1800;
+        const int port = 1800;
         // Адрес
         static IPAddress ipAddress;
         // Локальная конечная точка
@@ -29,10 +27,10 @@ namespace ConsoleTest
         public void Connection(Presenter presenter, ManualResetEvent createEvent, int imageBufferLength, int metaBufferLength)
         {
             this.presenter = presenter;
-            Configure();
-            SetSocket();
             this.createEvent = createEvent;
             sendEvent = new ManualResetEvent(false);
+            Configure();
+            SetSocket();
             NewThreadRenderingImages();
             NewThreadSendDataAndImages(imageBufferLength);
             ListenPort(metaBufferLength);
@@ -58,50 +56,30 @@ namespace ConsoleTest
 
         public void NewThreadRenderingImages()
         {
-            ThreadPool.QueueUserWorkItem((RenderingImages) =>
-            {
-                try
-                {
-                    presenter.SavePagesRendering(handler);
-                }
-                catch (SocketException)
-                {
-                    return;
-                }
-                    
+            ThreadPool.QueueUserWorkItem((RenderingImages) => {
+                try { presenter.SavePagesRendering(handler); }
+                catch (SocketException) { return; }     
             });
         }
 
         public void NewThreadSendDataAndImages(int imageBufferLength)
         {
-            ThreadPool.QueueUserWorkItem((SendData) =>
-            {
-                ServerImageConverter imageConverter = new ServerImageConverter(presenter, createEvent);
+            ThreadPool.QueueUserWorkItem((SendData) => {
                 try
                 {
                     SendPresentationData(presenter.GetSlidesCount()); //отправляем сведения о презентации
                     for (int i = 1; i <= presenter.GetSlidesCount(); i++)
                     {
                         Console.WriteLine(i);
-
-                        byte[] byteImage = imageConverter.ImageToByteArray(imageConverter.GetImage(i)); //берем изображение и переводим в массив байт
+                        byte[] byteImage = ServerImageConverter.ImageToByteArray(ServerImageConverter.GetImage(createEvent, presenter.GetSavePath(), presenter.GetExtension(), i)); //берем изображение и переводим в массив байт
                         sendEvent.Reset();
                         SendImage(byteImage, imageBufferLength); //отправка изображения
                         sendEvent.Set();
                     }
                 }
-                catch (SocketException)
-                {
-                    return;
-                }
-                catch (ObjectDisposedException)
-                {
-                    return;
-                }
-                finally
-                {
-                    presenter.Clear();
-                }
+                catch (SocketException) { return; }
+                catch (ObjectDisposedException) { return; }
+                finally { presenter.Clear(); }
             });
         }
 
@@ -143,18 +121,14 @@ namespace ConsoleTest
                 //ВОТ ЗДЕСЬ УВЕДОМЛЕНИЕ О РАЗРЫВЕ СВЯЗИ ИЛИ ОТКЛЮЧЕНИИ
                 Console.WriteLine(e.Message);
             }
-            finally //освобождаем сокеты
-            {
-                Shutdown();
-            }
+            finally { Shutdown(); }
         }
 
         public Task AsyncParseAndSendCode(byte[] receiveBuffer)
         {
-            return Task.Run(() =>
-            {
+            return Task.Run(() => {
                 int response;
-                if (KeySend.ParseCommand(this, presenter, receiveBuffer))
+                if (KeySend.ParseCommand(presenter, receiveBuffer))
                     response = -1;
                 else
                     response = -2;
@@ -170,14 +144,8 @@ namespace ConsoleTest
                 byte[] sendBuffer = BitConverter.GetBytes(response); //буфер для отправки
                 handler.Send(sendBuffer); //отправка данных
             }
-            catch (SocketException)
-            {
-                return;
-            }
-            catch (ObjectDisposedException)
-            {
-                return;
-            }
+            catch (SocketException) { return; }
+            catch (ObjectDisposedException) { return; }
         }
 
         public void Shutdown()
@@ -188,10 +156,7 @@ namespace ConsoleTest
                 handler.Close();
                 presenter.DeleteDirectory();
             }
-            catch (ObjectDisposedException)
-            {
-                return;
-            }
+            catch (ObjectDisposedException) { return; }
         }
     }
 }

@@ -58,55 +58,60 @@ namespace ConsoleTest.Presenters
         {
             return GetKey(5) + code + GetKey(6);
         }
-/*
-        public override void SetProcessId()
-        {
-            if (process.HasExited)
-                SetOldProcess();
-            else
-                SetNewProcess();
-        }
 
-        private void SetOldProcess()
+        public override string GetCommandExitProgram()
         {
-            Process firstProcess = null;
-            foreach (var p in Process.GetProcesses())
-            {
-                if (p.ProcessName == processName)
+            return GetKey(4) + "{TAB}" + GetKey(6);
+        }
+        /*
+                public override void SetProcessId()
                 {
-                    if (firstProcess == null)
-                        firstProcess = p;
+                    if (process.HasExited)
+                        SetOldProcess();
                     else
+                        SetNewProcess();
+                }
+
+                private void SetOldProcess()
+                {
+                    Process firstProcess = null;
+                    foreach (var p in Process.GetProcesses())
                     {
-                        if (firstProcess.StartTime > p.StartTime)
+                        if (p.ProcessName == processName)
                         {
-                            processId = firstProcess.Id;
-                            //process = firstProcess;
+                            if (firstProcess == null)
+                                firstProcess = p;
+                            else
+                            {
+                                if (firstProcess.StartTime > p.StartTime)
+                                {
+                                    processId = firstProcess.Id;
+                                    //process = firstProcess;
+                                }
+                                else if (firstProcess.StartTime < p.StartTime)
+                                {
+                                    processId = p.Id;
+                                    //process = p;
+                                }
+                                break;
+                            }
                         }
-                        else if (firstProcess.StartTime < p.StartTime)
+                    }
+                }
+
+                private void SetNewProcess()
+                {
+                    foreach (var p in Process.GetProcesses())
+                    {
+                        if (p.ProcessName == processName && process.Id != p.Id)
                         {
                             processId = p.Id;
                             //process = p;
+                            break;
                         }
-                        break;
                     }
                 }
-            }
-        }
-
-        private void SetNewProcess()
-        {
-            foreach (var p in Process.GetProcesses())
-            {
-                if (p.ProcessName == processName && process.Id != p.Id)
-                {
-                    processId = p.Id;
-                    //process = p;
-                    break;
-                }
-            }
-        }
-*/
+        */
         public override void Clear() { /*rasterizer.Close();*/ }
     }
 }

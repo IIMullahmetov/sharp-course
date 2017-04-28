@@ -5,8 +5,6 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 
-//НУЖНО ЗАВЕРШАТЬ ПРОЦЕСС POWERPNT
-
 namespace ConsoleTest.Presenters
 {
     abstract class Presenter
@@ -25,6 +23,7 @@ namespace ConsoleTest.Presenters
         protected int processId;
         protected int count;
 
+        //Переменные для определенных программ
         protected string presentationWindowName;
         protected ImageFormat imageFormat;
 
@@ -93,6 +92,8 @@ namespace ConsoleTest.Presenters
         public string GetKey(int index) { return keys[index]; }
 
         public abstract string GetCommandGoPage(int code);
+
+        public abstract string GetCommandExitProgram();
 
         public string GetExtension() { return extension; }
 

@@ -12,7 +12,7 @@ namespace MobileApp
     class ClientConnection
     {
         // Порт
-        static int port = 1800;
+        const int port = 1800;
         // Адрес
         static IPAddress ipAddress;
         // Локальная конечная точка
@@ -52,7 +52,7 @@ namespace MobileApp
                     images = new List<ImageSource>();
                     while (i <= slidesCount)
                     {
-                        if (ReceiveDistributor(i) == 0)
+                        if (ReceiveDistributor(i) == true)
                             i++;
                     }
                     uploadingImages = false;
@@ -93,7 +93,7 @@ namespace MobileApp
             return BitConverter.ToInt32(receiveMetaBuffer, 0); //узнаем количество слайдов, которые нам придут
         }
 
-        public int ReceiveDistributor(int i)
+        public bool ReceiveDistributor(int i)
         {
             byte[] receiveMetaBuffer = new byte[metaBufferLength]; //буфер для метаданных
             socket.Receive(receiveMetaBuffer); //записываем метаданные
@@ -102,13 +102,13 @@ namespace MobileApp
             {
                 response = intCode;
                 commandEvent.Set();
-                return -1;
+                return false;
             }
             else
             {
                 Console.WriteLine(i);
                 SetImage(intCode);
-                return 0;
+                return true;
             }
         }
 
@@ -137,8 +137,7 @@ namespace MobileApp
 
         public Task<int> Request(int message)
         {
-            return Task.Run(() =>
-            {
+            return Task.Run(() => {
                 try
                 {
                     SendCode(message);
@@ -179,10 +178,7 @@ namespace MobileApp
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
             }
-            catch (SocketException)
-            {
-                return;
-            }
+            catch (SocketException) { return; }
         }
     }
 }

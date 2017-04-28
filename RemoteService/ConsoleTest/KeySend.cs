@@ -1,34 +1,44 @@
-﻿using ConsoleTest.Presenters;
-using System;
-using System.Diagnostics;
-using System.Text;
+﻿using System;
 using System.Windows.Forms;
+using ConsoleTest.Presenters;
 
 namespace ConsoleTest
 {
     class KeySend
     {
-        //КОМАНДЫ
+        private static int previousCommand = 1;
 
         // Следующий слайд
         private const int codeNext = -1;
         // Предыдущий слайд
         private const int codePrev = -2;
-        // Запуск презентации
+        // Запуск режима презентации
         private const int codePlay = -3;
-        // Выход
+        // Выход из режима презентации
         private const int codeClose = -4;
-        // Закрытие программы
+        // Закрытие презентации
         private const int codeExit = -5;
 
-        public static bool ParseCommand(ServerConnection connection, Presenter presenter, byte[] receiveBuffer)
+        public static bool ParseCommand(Presenter presenter, byte[] receiveBuffer)
         {
             int code = BitConverter.ToInt32(receiveBuffer, 0);
 
             Console.WriteLine("ServerTask - " + code);
-
+            /*
+            int deviceCommand = previousCommand - code;
+            switch (deviceCommand)
+            {
+                case -1:
+                    code = -1;
+                    break;
+                case 1:
+                    code = -2;
+                    break;
+            }
+            previousCommand = code;
+            */
             string command = null;
-            switch (code) // определяемся с командами клиента, 49 - это код символа в ASCII
+            switch (code)
             {
                 case codeNext:
                     command = presenter.GetKey(0);
@@ -43,7 +53,7 @@ namespace ConsoleTest
                     command = presenter.GetKey(3);
                     break;
                 case codeExit: //закрытие презентации
-                    command = presenter.GetKey(4);
+                    command = presenter.GetCommandExitProgram();
                     break;
                 default: //переход к слайду
                     command = presenter.GetCommandGoPage(code);

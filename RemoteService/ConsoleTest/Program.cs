@@ -25,7 +25,6 @@ namespace ConsoleTest
 
             ServerConnection cc = new ServerConnection();
             cc.Connection(presenter, createEvent, imageBufferLength, metaBufferLength);
-            //cc.Connection(presenter, imageBufferLength, metaBufferLength);
             Console.ReadLine();
         }
     }
