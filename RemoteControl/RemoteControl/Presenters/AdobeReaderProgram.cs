@@ -11,23 +11,18 @@ namespace ConsoleTest.Presenters
         //private GhostscriptRasterizer rasterizer;
 
         public AdobeReaderProgram(ManualResetEvent createEvent, string presentationPath, string savePath, string extension, int dpi)
-            : base(createEvent, savePath, extension, dpi)
+            : base(createEvent, presentationPath, savePath, extension, dpi)
         {
             SetParametres();
+            ConfigureRendering();
+            Launch();
         }
 
-        public override void SetParametres()
+        public void SetParametres()
         {
             keys = new string[] { "{RIGHT}", "{LEFT}", "^(l)", "{ESC}", "%(+{F4})", "^(+n)", "~" };
             programName = "Adobe Acrobat Reader DC";
             processName = "AcroRd32";
-        }
-
-        public override void LaunchNewPresentation(string presentationPath)
-        {
-            base.LaunchNewPresentation(presentationPath);
-            ConfigureRendering();
-            Launch();
         }
 
         public override void ConfigureRendering()

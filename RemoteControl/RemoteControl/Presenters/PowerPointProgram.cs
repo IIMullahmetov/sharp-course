@@ -19,25 +19,20 @@ namespace ConsoleTest.Presenters
         private int width;
         private int height;
 
-        public PowerPointProgram(ManualResetEvent createEvent, string savePath, string extension, int dpi)
-            : base(createEvent, savePath, extension, dpi)
+        public PowerPointProgram(ManualResetEvent createEvent, string presentationPath, string savePath, string extension, int dpi)
+            : base(createEvent, presentationPath, savePath, extension, dpi)
         {
             SetParametres();
+            ConfigureRendering();
+            Launch();
         }
 
-        public override void SetParametres()
+        public void SetParametres()
         {
             keys = new string[] { "{RIGHT}", "{LEFT}", "{F5}", "{ESC}", "%(+{F4})", "~" };
             programName = "PowerPoint";
             presentationWindowName = "Демонстрация PowerPoint";
             processName = "POWERPNT";
-        }
-
-        public override void LaunchNewPresentation(string presentationPath)
-        {
-            base.LaunchNewPresentation(presentationPath);
-            ConfigureRendering();
-            Launch();
         }
 
         public override void ConfigureRendering()

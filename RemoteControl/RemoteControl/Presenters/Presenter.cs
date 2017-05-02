@@ -27,18 +27,25 @@ namespace ConsoleTest.Presenters
         protected string presentationWindowName;
         protected ImageFormat imageFormat;
 
-        public Presenter() { }
-
-        public Presenter(ManualResetEvent createEvent, string savePath, string extension, int dpi)
+        public Presenter(ManualResetEvent createEvent, string presentationPath, string savePath, string extension, int dpi)
         {
             this.createEvent = createEvent;
+            this.presentationPath = presentationPath;
             this.savePath = savePath;
             this.extension = extension;
             this.dpi = dpi;
+            presentationName = Path.GetFileNameWithoutExtension(this.presentationPath);
             format = extension.Substring(1, extension.Length - 1);
         }
 
         public void Launch()
+        {
+            DeleteDirectory();
+            StartProcess();
+            CreateDirectory();
+        }
+
+        public void StartProcess()
         {
             const string quote = "\"";
 
@@ -52,11 +59,15 @@ namespace ConsoleTest.Presenters
 
         public void DeleteDirectory()
         {
-            if (Directory.Exists(savePath))
+            try
             {
-                createEvent.WaitOne();
-                Directory.Delete(savePath, true);
-                createEvent.Reset();
+                if (Directory.Exists(savePath))
+                    Directory.Delete(savePath, true);
+            }
+            catch (IOException)
+            {
+                Thread.Sleep(10);
+                DeleteDirectory();
             }
         }
 
@@ -64,16 +75,6 @@ namespace ConsoleTest.Presenters
         {
             if (!Directory.Exists(savePath))
                 Directory.CreateDirectory(savePath);
-        }
-
-        public abstract void SetParametres();
-
-        public virtual void LaunchNewPresentation(string presentationPath)
-        {
-            DeleteDirectory();
-            this.presentationPath = presentationPath;
-            presentationName = Path.GetFileNameWithoutExtension(this.presentationPath);
-            CreateDirectory();
         }
 
         public abstract void ConfigureRendering();

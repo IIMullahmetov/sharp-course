@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>0631c8ba-e780-4c6b-89fb-c1c537b0494b</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>MobileApp</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CarouselItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ClientConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IFileWorker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\BaseViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\CarouselPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ItemsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\CarouselPage.xaml.cs">
+      <DependentUpon>CarouselPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ConnectionPage.xaml.cs">
+      <DependentUpon>ConnectionPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\CarouselPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\ConnectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

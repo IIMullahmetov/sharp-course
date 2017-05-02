@@ -11,33 +11,29 @@ namespace ConsoleTest
     class ServerConnection
     {
         // Порт
-        private const int port = 1800;
+        const int port = 1800;
         // Адрес
-        private static IPAddress ipAddress;
+        static IPAddress ipAddress;
         // Локальная конечная точка
-        private IPEndPoint ipEndPoint;
+        IPEndPoint ipEndPoint;
         // Сокет
-        private Socket handler;
+        Socket handler;
         //Объект презентации
-        private Presenter presenter;
+        Presenter presenter;
         //
-        private ManualResetEvent createEvent;
-        private ManualResetEvent sendEvent;
+        ManualResetEvent createEvent;
+        ManualResetEvent sendEvent;
 
-        public void Connection(ManualResetEvent createEvent, int imageBufferLength, int metaBufferLength)
+        public void Connection(Presenter presenter, ManualResetEvent createEvent, int imageBufferLength, int metaBufferLength)
         {
+            this.presenter = presenter;
             this.createEvent = createEvent;
             sendEvent = new ManualResetEvent(false);
             Configure();
             SetSocket();
-            ListenPort(metaBufferLength);
-        }
-
-        public void SendNewPresentation(Presenter presenter, int imageBufferLength, int metaBufferLength)
-        {
-            this.presenter = presenter;
             NewThreadRenderingImages();
             NewThreadSendDataAndImages(imageBufferLength);
+            ListenPort(metaBufferLength);
         }
 
         public void Configure()
@@ -56,17 +52,12 @@ namespace ConsoleTest
             listenSocket.Bind(ipEndPoint); // связываем сокет с конечной точкой
             listenSocket.Listen(1); // переходим в режим "прослушивания"
             handler = listenSocket.Accept(); //получаем подключение
-            sendEvent.Set();
         }
 
         public void NewThreadRenderingImages()
         {
             ThreadPool.QueueUserWorkItem((RenderingImages) => {
-                try
-                {
-                    sendEvent.WaitOne();
-                    presenter.SavePagesRendering(handler);
-                }
+                try { presenter.SavePagesRendering(handler); }
                 catch (SocketException) { return; }     
             });
         }
@@ -76,8 +67,6 @@ namespace ConsoleTest
             ThreadPool.QueueUserWorkItem((SendData) => {
                 try
                 {
-                    sendEvent.WaitOne();
-                    sendEvent.Reset();
                     SendPresentationData(presenter.GetSlidesCount()); //отправляем сведения о презентации
                     for (int i = 1; i <= presenter.GetSlidesCount(); i++)
                     {
