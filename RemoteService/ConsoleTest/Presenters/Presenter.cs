@@ -12,7 +12,7 @@ namespace ConsoleTest.Presenters
         protected Process process;
         protected ManualResetEvent createEvent;
         protected string[] keys;
-        protected string presentationPath;
+        protected string presentationPath { get; set; }
         protected string savePath;
         protected string extension;
         protected string presentationName;

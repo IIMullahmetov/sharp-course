@@ -67,7 +67,7 @@ namespace ConsoleTest
                     sendEvent.WaitOne();
                     presenter.SavePagesRendering(handler);
                 }
-                catch (SocketException) { return; }     
+                catch (SocketException) { return; }
             });
         }
 
